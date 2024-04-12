@@ -20,13 +20,15 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "bun test",
-    "build": "bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
+    "clean": "rm -rf ./dist",
+    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
   },
   "dependencies": {
     "@wareme/event-emitter": "workspace:../event-emitter"
   },
   "devDependencies": {
-    "standard": "^17.1.0"
+    "standard": "^17.1.0",
+    "@dark-engine/platform-server": "^1.1.0"
   },
   "peerDependencies": {
     "@dark-engine/core": "^1.1.0"

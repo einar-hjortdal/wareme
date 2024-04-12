@@ -13,7 +13,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "bun test",
-    "build": "bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
+    "clean": "rm -rf ./dist",
+    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
   },
   "devDependencies": {
     "standard": "^17.1.0"
