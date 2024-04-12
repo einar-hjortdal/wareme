@@ -1,0 +1,15 @@
+{
+  "name": "wareme",
+  "description": "Utilities for Dark projects",
+  "private": true,
+  "type": "module",
+  "author": "Coachonko",
+  "repository": "https://github.com/Coachonko/wareme",
+  "license": "NCSA",
+  "scripts": {
+    "test": "bun test"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

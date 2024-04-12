@@ -1,0 +1,24 @@
+{
+  "name": "event-emitter",
+  "description": "High performance event emitter for Dark projects",
+  "version": "3.0.1",
+  "keywords": [
+    "Dark",
+    "events",
+    "eventemitter"
+  ],
+  "author": "Coachonko",
+  "repository": "https://github.com/Coachonko/wareme",
+  "license": "NCSA",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "bun test",
+    "build": "bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
+  },
+  "peerDependencies": {
+    "@dark-engine/core": "^1.0.3"
+  }
+}

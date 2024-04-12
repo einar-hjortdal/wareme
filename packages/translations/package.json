@@ -1,0 +1,34 @@
+{
+  "name": "translations",
+  "description": "Translate Dark applications",
+  "version": "3.6.0",
+  "keywords": [
+    "i18n",
+    "l10n",
+    "internationalization",
+    "localization",
+    "translation",
+    "intl",
+    "messageformat",
+    "plural",
+    "icu",
+    "Dark"
+  ],
+  "author": "Coachonko",
+  "repository": "https://github.com/Coachonko/wareme",
+  "license": "NCSA",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "bun test",
+    "build": "bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
+  },
+  "dependencies": {
+    "@wareme/event-emitter": "workspace:../event-emitter"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
+  },
+  "peerDependencies": {
+    "@dark-engine/core": "^1.1.0"
+  }
+}
