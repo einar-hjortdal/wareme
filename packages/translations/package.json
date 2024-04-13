@@ -21,7 +21,8 @@
   "scripts": {
     "test": "bun test",
     "clean": "rm -rf ./dist",
-    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core"
+    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core",
+    "dev": "bun run build --watch"
   },
   "dependencies": {
     "@wareme/event-emitter": "workspace:../event-emitter"
