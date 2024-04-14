@@ -1,20 +1,18 @@
 import { useContext, useState, useEffect } from '@dark-engine/core'
 import { TranslationsContext } from './TranslationsProvider'
 
+function alwaysNewT (translator, idPrefix) {
+  return translator.getFixedT(idPrefix)
+}
+
 export function useTranslation (idPrefix) {
   const { translator } = useContext(TranslationsContext)
-
-  // Get a new function every time
-  const getT = () => {
-    return translator.getFixedT(idPrefix)
-  }
-
-  const [t, setT] = useState(getT)
+  const getNewT = () => alwaysNewT(translator, idPrefix)
+  const [t, setT] = useState(getNewT)
 
   useEffect(() => {
-    // Update the t function
     const updateT = () => {
-      setT(getT)
+      setT(getNewT)
     }
 
     // Subscribe to changes in the translator instance on mount
