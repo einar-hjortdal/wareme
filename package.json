@@ -7,7 +7,10 @@
   "repository": "https://github.com/Coachonko/wareme",
   "license": "NCSA",
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "build:event-emitter": "cd packages/event-emitter && bun run build",
+    "build:translations": "cd packages/translations && bun run build",
+    "build": "bun run build:event-emitter && bun run build:translations"
   },
   "workspaces": [
     "packages/*"
