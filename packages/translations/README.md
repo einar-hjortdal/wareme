@@ -8,30 +8,88 @@
 - ICU message-like syntax
 - Dynamic messages loading
 
+## Usage
 
-### Setup
-
+1. Create a `Translator` instance
 ```js
-import { Translator, TranslationsProvider } from '@wareme/translations'
+import { Translator } from '@wareme/translations'
 
-import messages from './messages/en.js'
-const translator = new Translator('en', messages)
+const currentLanguage = 'en'
+const messages = {'notFound.title': 'This page does not exist'}
+const translator = new Translator(currentLanguage, messages)
+```
+2. Add the context provider to your application and give it the instance
+```js
+import { component } from '@dark-engine/core'
+import { Router } from '@dark-engine/web-router'
 
-<TranslationsProvider translator={translator}>
-  <App />
-<TranslationsProvider />
+const App = component(({ currentPath, translator }) => {
+  return (
+    <TranslationsProvider translator={translator}>
+      <Router routes={routes} url={currentPath}>
+        {slot => slot}
+      </Router>
+    </TranslationsProvider>
+  )
+})
+```
+3. Retrieve the `t` function with the `useTranslations` hook inside of your components
+```js
+import { component } from '@dark-engine/core'
+import { useTranslation } from '@wareme/translations'
+
+const NotFound = component(() => {
+  const { t } = useTranslation()
+  return {t('notFound.title')} // This page does not exist
+})
+
+export default NotFound
+```
+4. Change language with the `changeLanguage` method
+```js
+import { component } from '@dark-engine/core'
+import { useTranslation } from '@wareme/translations'
+
+const messages = {'notFound.title': 'Deze pagina bestaat niet'}
+
+const NotFound = component(() => {
+  const { t, translator } = useTranslation()
+  translator.changeLanguage('nl', nlMessages)
+  return {t('notFound.title')} // Deze pagina bestaat niet
+})
+
+export default NotFound
 ```
 
-### Usage
-
-TODO
+### The `Translate` component
 
 ```js
+import { Translator, Translate } from '@wareme/translations'
+
+const en = { 'translate.test': 'hello <italic>beautiful</italic> <bold>{what}</bold>'}
+const translator = new Translator('en', en)
+
+const TranslateExample = component(({ translator }) => {
+  return (
+    <TranslationsProvider translator={translator}>
+      <Translate
+        id='translate.test'
+        values={{ what: 'world' }}
+        elements={{
+          italic: (chunk) => <i>{chunk}</i>,
+          bold: (chunk) => <strong>{chunk}</strong>
+        }}
+      />
+    </TranslationsProvider>
+  )
+})
+
+TranslateExample({ translator: translatorEn }) // 'hello <i>beautiful</i> <strong>world</strong>'
 ```
 
 ### Dynamic locale data loading
 
-1. Create a couple of functions to handle the loading of locale data
+1. Create a couple of functions to handle the loading of locale data.
 ```js
 export async function getMessages (lang) {
   if (lang === 'it') {
@@ -62,8 +120,6 @@ export async function dynamicMessagesLoading (translations, lang) {
 }
 ```
 2. Use this function
-
-TODO show example
 
 ### Missing messages and fallback messages
 

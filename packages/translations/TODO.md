@@ -1,4 +1,8 @@
 - `--external @wareme/event-emitter`?
+- Documentation
+  - options for the `t` function
+  - better example for `changeLanguage`
+  - SSR example
 
 ## SPA functionality
 
