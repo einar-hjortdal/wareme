@@ -10,7 +10,8 @@
     "test": "bun test",
     "build:event-emitter": "cd packages/event-emitter && bun run build",
     "build:translations": "cd packages/translations && bun run build",
-    "build": "bun run build:event-emitter && bun run build:translations"
+    "build:intersection-observer": "cd packages/intersection-observer && bun run build",
+    "build": "bun run build:event-emitter && bun run build:translations && bun run build:intersection-observer"
   },
   "workspaces": [
     "packages/*"
