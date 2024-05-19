@@ -1,5 +1,5 @@
 {
-  "name": "intersection-observer",
+  "name": "use-in-view",
   "description": "Wraps the Observer API",
   "version": "3.1.0",
   "keywords": [

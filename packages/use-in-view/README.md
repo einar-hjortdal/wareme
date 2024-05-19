@@ -1,4 +1,4 @@
-# Intersection Observer
+# use-in-view
 
 Wrapper for the Observer API
 
@@ -8,7 +8,7 @@ Assign the `ref` to the element you want to monitor, and the hook will report th
 
 ```js
 import { component } from '@dark-engine/core'
-import { useInView } from '@wareme/intersection-observer'
+import { useInView } from '@wareme/use-in-view'
 
 const Observed = component(() => {
   const { ref, inView, entry } = useInView({
