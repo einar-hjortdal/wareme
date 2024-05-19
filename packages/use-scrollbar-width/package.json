@@ -1,5 +1,5 @@
 {
-  "name": "scrollbar-width",
+  "name": "use-scrollbar-width",
   "description": "Determine the scrollbar width of the browser",
   "version": "3.0.1",
   "keywords": [
