@@ -11,5 +11,5 @@ export const TranslationsProvider = component(({ translator, slot }) => {
   const value = useMemo(() => {
     return { translator }
   }, [translator])
-  return <TranslationsContext.Provider value={value}>{slot}</TranslationsContext.Provider>
+  return <TranslationsContext value={value}>{slot}</TranslationsContext>
 })
