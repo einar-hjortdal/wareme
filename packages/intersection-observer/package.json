@@ -1,7 +1,7 @@
 {
   "name": "intersection-observer",
   "description": "Wraps the Observer API",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "keywords": [
     "Dark",
     "intersection",
@@ -22,6 +22,6 @@
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.0.3"
+    "@dark-engine/core": "^1.3.0"
   }
 }
