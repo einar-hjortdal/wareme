@@ -29,9 +29,9 @@
   },
   "devDependencies": {
     "standard": "^17.1.0",
-    "@dark-engine/platform-server": "^1.4.0"
+    "@dark-engine/platform-server": "^1.4.1"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.4.0"
+    "@dark-engine/core": "^1.4.1"
   }
 }

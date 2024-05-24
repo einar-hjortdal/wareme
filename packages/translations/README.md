@@ -61,6 +61,46 @@ const NotFound = component(() => {
 export default NotFound
 ```
 
+### The `translator` instance
+
+You can retrieve the translator instance with the `useTranslation` hook and use it in your components.
+
+```js
+import { component } from '@dark-engine/core'
+import { useTranslation } from '@wareme/translations'
+
+const OpeningHours = component(({ className }) => {
+  const { t, translator } = useTranslation('openingHours')
+
+  const dayOptions = { weekday: 'long' }
+  const monday = translator.formatDate(new Date(2024, 0, 1), dayOptions)
+  const tuesday = translator.formatDate(new Date(2024, 0, 2), dayOptions)
+  const saturday = translator.formatDate(new Date(2024, 0, 6), dayOptions)
+  const sunday = translator.formatDate(new Date(2024, 0, 7), dayOptions)
+
+  const timeOptions = { hour: 'numeric', minute: '2-digit' }
+  const time9 = translator.formatDate(new Date(2024, 0, 1, 9, 0, 0), timeOptions)
+  const time12 = translator.formatDate(new Date(2024, 0, 1, 12, 0, 0), timeOptions)
+  const time15 = translator.formatDate(new Date(2024, 0, 1, 15, 0, 0), timeOptions)
+  const time19 = translator.formatDate(new Date(2024, 0, 1, 19, 0, 0), timeOptions)
+
+  return (
+    <div className={className}>
+      <h3>{t('heading')}</h3>
+      <span>{tuesday} - {saturday}</span><br />
+      <span>
+        {time9} - {time12}<br />
+        {time15} - {time19}
+      </span><br />
+      <span>{sunday} - {monday}</span><br />
+      <span>{t('closed')}</span>
+    </div>
+  )
+})
+
+export default OpeningHours
+```
+
 ### The `Translate` component
 
 ```js

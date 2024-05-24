@@ -1,9 +1,4 @@
-import {
-  h,
-  component,
-  createContext,
-  useMemo
-} from '@dark-engine/core'
+import { component, createContext, useMemo } from '@dark-engine/core'
 
 export const TranslationsContext = createContext(null)
 
