@@ -13,7 +13,6 @@ function alwaysString (stringOrArray) {
   if (detectIsArray(stringOrArray)) {
     return stringOrArray.toString()
   }
-
   return stringOrArray
 }
 
