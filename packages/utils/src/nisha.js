@@ -1,6 +1,6 @@
 import { formatErrorMsg } from '@dark-engine/core'
 
-const throwNishaError = (errorMsg) => {
+const throwError = (errorMsg) => {
   throw new Error(formatErrorMsg(errorMsg, 'nisha'))
 }
 
@@ -9,10 +9,10 @@ const throwNishaError = (errorMsg) => {
 // trueValue and falseValue must have the same type.
 export const nisha = (conditionBool, trueValue, falseValue) => {
   if (typeof conditionBool !== 'boolean') {
-    throwNishaError('`conditionBool` must be a boolean')
+    throwError('`conditionBool` must be a boolean')
   }
   if (typeof trueValue !== typeof falseValue) {
-    throwNishaError('`trueValue` `falseValue` must have matching type')
+    throwError('`trueValue` `falseValue` must have matching type')
   }
   if (conditionBool) {
     return trueValue

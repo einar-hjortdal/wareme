@@ -1,6 +1,6 @@
 import { formatErrorMsg } from '@dark-engine/core'
 
-const throwNishahoError = (errorMsg) => {
+const throwError = (errorMsg) => {
   throw new Error(formatErrorMsg(errorMsg, 'nishaho'))
 }
 
@@ -10,10 +10,10 @@ const throwNishahoError = (errorMsg) => {
 // defaultReturn, returnOne and returnTwo must have the same type.
 export const nishaho = (defaultReturn, conditionOne, returnOne, conditionTwo, returnTwo) => {
   if (typeof conditionOne !== 'boolean' || typeof conditionTwo !== 'boolean') {
-    throwNishahoError('`conditionOne` and `conditionTwo` must be boolean')
+    throwError('`conditionOne` and `conditionTwo` must be boolean')
   }
   if (typeof defaultReturn !== typeof returnOne || typeof returnOne !== typeof returnTwo) {
-    throwNishahoError('`defaultReturn`, `returnOne` and `returnTwo` must have matching type')
+    throwError('`defaultReturn`, `returnOne` and `returnTwo` must have matching type')
   }
   if (conditionOne) {
     return returnOne
