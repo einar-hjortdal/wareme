@@ -1,7 +1,7 @@
 {
   "name": "use-scrollbar-width",
   "description": "Determine the scrollbar width of the browser",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "keywords": [
     "util",
     "scrollbar",
@@ -22,6 +22,6 @@
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.3.0"
+    "@dark-engine/core": "^1.4.1"
   }
 }

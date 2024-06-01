@@ -1,3 +1,5 @@
+import { detectIsEmpty } from "@dark-engine/core"
+
 // Sakkyuu allows you to centralize requestAnimationFrame (rAF) calls in one async loop.
 // 1. Create a single instance of Sakkyuu in your application and use it for all rAF needs `const sakkyuu = new Sakkyuu()`
 // 1. create a callback to be executed at every frame `const onFrame = (time, deltaTime) => {/* do stuff */}`
@@ -15,14 +17,16 @@ export class Sakkyuu {
     if (detectIsEmpty(priority)) {
       priority = 0
     }
+    const sortFn = (a, b) => a.priority - b.priority
     this.callbacks.push({ callback, priority })
-    this.callbacks.sort((a, b) => a.priority - b.priority)
+    this.callbacks.sort(sortFn)
 
     return () => this.remove(callback)
   }
 
   remove (callback) {
-    this.callbacks = this.callbacks.filter(({ callback: cb }) => callback !== cb)
+    const filterFn = ({ callback: cb }) => callback !== cb
+    this.callbacks = this.callbacks.filter(filterFn)
   }
 
   raf = (now) => {
