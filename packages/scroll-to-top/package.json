@@ -1,5 +1,5 @@
 {
-  "name": "scroll-to-top",
+  "name": "@wareme/scroll-to-top",
   "description": "Scroll to top on when pathname changes",
   "version": "3.0.0",
   "keywords": [

@@ -12,7 +12,7 @@ export const nisha = (conditionBool, trueValue, falseValue) => {
     throwError('`conditionBool` must be a boolean')
   }
   if (typeof trueValue !== typeof falseValue) {
-    throwError('`trueValue` `falseValue` must have matching type')
+    throwError('`trueValue` and `falseValue` must have matching type')
   }
   if (conditionBool) {
     return trueValue

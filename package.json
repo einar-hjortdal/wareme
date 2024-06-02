@@ -11,6 +11,7 @@
     "build": "for dir in packages/*; do if [ -d \"$dir\" ]; then (cd \"$dir\" && bun run build); fi; done"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ]
 }

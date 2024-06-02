@@ -1,12 +1,12 @@
 import { detectIsEmpty } from "@dark-engine/core"
 
-// Sakkyuu allows you to centralize requestAnimationFrame (rAF) calls in one async loop.
-// 1. Create a single instance of Sakkyuu in your application and use it for all rAF needs `const sakkyuu = new Sakkyuu()`
-// 1. create a callback to be executed at every frame `const onFrame = (time, deltaTime) => {/* do stuff */}`
-// 2. pass the callback to the Sakkyuu instance `const unsubscribe = sakkyuu.add(onFrame, 0)`
-// 3. unsubscribe from the Sakkyuu instance to keep the loop small
+// RafNexus allows you to centralize requestAnimationFrame (rAF) calls in one async loop.
+// 1. Create a single instance of RafNexus in your application and use it for all rAF needs `const rafNexus = new RafNexus()`
+// 2. create a callback to be executed at every frame `const onFrame = (time, deltaTime) => {/* do stuff */}`
+// 3. pass the callback to the RafNexus instance `const unsubscribe = rafNexus.add(onFrame, 0)`
+// 4. unsubscribe from the RafNexus instance to keep the loop small
 // Note: it uses web APIs, check if you're in a browser before creating an instance.
-export class Sakkyuu {
+export class RafNexus {
   constructor() {
     this.callbacks = []
     this.now = performance.now()

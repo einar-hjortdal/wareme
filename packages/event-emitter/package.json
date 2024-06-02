@@ -1,5 +1,5 @@
 {
-  "name": "event-emitter",
+  "name": "@wareme/event-emitter",
   "description": "High performance event emitter for Dark projects",
   "version": "3.2.0",
   "keywords": [

@@ -1,17 +1,9 @@
 {
-  "name": "@wareme/translations",
-  "description": "Translate Dark applications",
-  "version": "3.8.0",
+  "name": "@wareme/smooth-scrolling",
+  "description": "High performance smooth scrolling for Dark applications",
+  "version": "3.0.0",
   "keywords": [
-    "i18n",
-    "l10n",
-    "internationalization",
-    "localization",
-    "translation",
-    "intl",
-    "messageformat",
-    "plural",
-    "icu",
+    "smooth-scrolling",
     "Dark"
   ],
   "author": "Coachonko",
@@ -25,11 +17,11 @@
     "dev": "bun run build --watch"
   },
   "dependencies": {
-    "@wareme/event-emitter": "workspace:*"
+    "@wareme/event-emitter": "workspace:*",
+    "@wareme/utils": "workspace:*"
   },
   "devDependencies": {
-    "standard": "^17.1.0",
-    "@dark-engine/platform-server": "^1.4.1"
+    "standard": "^17.1.0"
   },
   "peerDependencies": {
     "@dark-engine/core": "^1.4.1"

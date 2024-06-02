@@ -135,7 +135,7 @@ function replaceDummyElements (translation, locatedDummyElements) {
 }
 
 // Translate is able to perform interpolation and handle elements
-export const Translate = component(({ className, id, defaultMessage, elements, values }) => {
+export const Translate = component(({ id, defaultMessage, elements, values }) => {
   if (detectIsEmpty(id) && detectIsEmpty(defaultMessage)) {
     throw new Error('Missing both `id` and `defaultMessage` props')
   }
