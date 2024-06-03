@@ -1,5 +1,4 @@
 import { EventEmitter } from '@wareme/event-emitter'
-import { nisha, nishaho } from '@wareme/utils'
 
 const LINE_HEIGHT = 100 / 6
 
@@ -33,9 +32,15 @@ export class VirtualScroll {
     this.element.removeEventListener('touchend', this.onTouchEnd, this.elementListenerOptions)
   }
 
+  getTouchList = (event) => {
+    if (event.targetTouches) {
+      return event.targetTouches[0]
+    }
+    return event
+  }
+
   onTouchStart = (event) => {
-    // event.targetTouches may be null or undefined if the browser doesn't support it
-    const { clientX, clientY } = nisha(event.targetTouches, event.targetTouches[0], event)
+    const { clientX, clientY } = this.getTouchList(event)
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
@@ -46,7 +51,7 @@ export class VirtualScroll {
   }
 
   onTouchMove = (event) => {
-    const { clientX, clientY } = nisha(event.targetTouches, event.targetTouches[0], event)
+    const { clientX, clientY } = this.getTouchList(event)
 
     const deltaX = -(clientX - this.touchStart.x) * this.touchMultiplier
     const deltaY = -(clientY - this.touchStart.y) * this.touchMultiplier
@@ -64,11 +69,20 @@ export class VirtualScroll {
     deltaY: this.lastDelta.y, event
   })
 
+  getMultipliers = (deltaMode) => {
+    if (deltaMode === 1) {
+      return [LINE_HEIGHT, LINE_HEIGHT]
+    }
+    if (deltaMode === 2) {
+      return [this.windowWidth, this.windowHeight]
+    }
+    return [1, 1]
+  }
+
   onWheel = (event) => {
     let { deltaX, deltaY, deltaMode } = event
 
-    const multiplierX = nishaho(1, deltaMode === 1, LINE_HEIGHT, deltaMode === 2, this.windowWidth)
-    const multiplierY = nishaho(1, deltaMode === 1, LINE_HEIGHT, deltaMode === 2, this.windowHeight)
+    const [multiplierX, multiplierY] = this.getMultipliers(deltaMode)
 
     deltaX *= multiplierX
     deltaY *= multiplierY
