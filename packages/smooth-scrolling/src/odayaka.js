@@ -5,14 +5,15 @@ import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { clamp, modulo } from './utils'
 import { VirtualScroll } from './virtualScroll'
+import { detectIsFunction } from '@dark-engine/core'
 
 // Odayaka does the following:
-// - listen to 'wheel' events
-// - prevent 'wheel' event to prevent scroll
-// - normalize wheel delta
-// - add delta to targetScroll
-// - animate scroll to targetScroll (smooth context)
-// - if animation is not running, listen to 'scroll' events (native context)
+// - listens to 'wheel' events
+// - prevents 'wheel' event to prevent scroll
+// - normalizes wheel delta
+// - adds delta to targetScroll
+// - animates scroll to targetScroll (smooth context)
+// - if animation is not running, listens to 'scroll' events (native context)
 export class Odayaka {
   __isScrolling = false
   __isStopped = false
@@ -25,7 +26,7 @@ export class Odayaka {
   options
   targetScroll
   animatedScroll
-  constructor ({
+  constructor({
     wrapper = window,
     content = document.documentElement,
     eventsTarget = wrapper,
@@ -157,7 +158,7 @@ export class Odayaka {
     if (
       Boolean(composedPath.find(
         (node) =>
-          (typeof prevent === 'function' ? prevent?.(node) : prevent) ||
+          nisha(detectIsFunction(prevent), () => prevent(node), prevent) ||
           node.hasAttribute?.('data-odayaka-prevent') ||
           (isTouch && node.hasAttribute?.('data-odayaka-prevent-touch')) ||
           (isWheel && node.hasAttribute?.('data-odayaka-prevent-wheel')) ||
@@ -236,7 +237,7 @@ export class Odayaka {
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
-      this.isScrolling = this.hasScrolled ? 'native' : false
+      this.isScrolling = nisha(this.hasScrolled, 'native', false)
       this.emit()
 
       if (this.velocity !== 0) {
@@ -412,12 +413,7 @@ export class Odayaka {
   }
 
   get scroll () {
-    return nisha(this.options.infinite, modulo(this.animatedScroll, this.limit), this.animatedScroll)
-  }
-
-  get progress () {
-    // avoid progress to be NaN
-    return nisha(this.limit === 0, 1, this.scroll / this.limit)
+    return nisha(this.options.infinite, () => modulo(this.animatedScroll, this.limit), this.animatedScroll)
   }
 
   get isScrolling () {

@@ -4,7 +4,6 @@ import { nisha } from '@wareme/utils'
 import { damp, clamp } from './utils'
 
 export class Animate {
-  easing = (t) => t // this shouldn't be necessary TODO investigate
   advance (deltaTime) {
     if (this.isRunning === false) {
       return
@@ -23,7 +22,7 @@ export class Animate {
       const linearProgress = clamp(0, this.currentTime / this.duration, 1)
 
       completed = linearProgress >= 1
-      const easedProgress = nisha(completed, 1, this.easing(linearProgress))
+      const easedProgress = nisha(completed, 1, () => this.easing(linearProgress))
       this.value = this.from + (this.to - this.from) * easedProgress
     }
 

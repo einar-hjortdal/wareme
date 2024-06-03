@@ -4,7 +4,7 @@ import { nishaho } from '@wareme/utils'
 const LINE_HEIGHT = 100 / 6
 
 export class VirtualScroll {
-  constructor (element, { wheelMultiplier = 1, touchMultiplier = 1 }) {
+  constructor(element, { wheelMultiplier = 1, touchMultiplier = 1 }) {
     this.element = element
     this.wheelMultiplier = wheelMultiplier
     this.touchMultiplier = touchMultiplier
@@ -23,11 +23,9 @@ export class VirtualScroll {
     this.element.addEventListener('touchend', this.onTouchEnd, this.elementListenerOptions)
   }
 
-  on (callback) {
-    return this.eventEmitter.on(callback)
-  }
+  on = (callback) => this.eventEmitter.on(callback)
 
-  destroy () {
+  destroy = () => {
     window.removeEventListener('resize', this.onWindowResize, false)
     this.element.removeEventListener('wheel', this.onWheel, this.elementListenerOptions)
     this.element.removeEventListener('touchstart', this.onTouchStart, this.elementListenerOptions)
@@ -37,7 +35,7 @@ export class VirtualScroll {
 
   onTouchStart = (event) => {
     // event.targetTouches may be null or undefined if the browser doesn't support it
-    const { clientX, clientY } = event.targetTouches ? event.targetTouches[0] : event
+    const { clientX, clientY } = nisha(event.targetTouches, e.targetTouches[0], event)
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
@@ -48,7 +46,7 @@ export class VirtualScroll {
   }
 
   onTouchMove = (event) => {
-    const { clientX, clientY } = event.targetTouches ? event.targetTouches[0] : event
+    const { clientX, clientY } = nisha(event.targetTouches, e.targetTouches[0], event)
 
     const deltaX = -(clientX - this.touchStart.x) * this.touchMultiplier
     const deltaY = -(clientY - this.touchStart.y) * this.touchMultiplier
@@ -61,9 +59,10 @@ export class VirtualScroll {
     this.eventEmitter.emit({ deltaX, deltaY, event })
   }
 
-  onTouchEnd = (event) => {
-    this.eventEmitter.emit({ deltaX: this.lastDelta.x, deltaY: this.lastDelta.y, event })
-  }
+  onTouchEnd = (event) => this.eventEmitter.emit({
+    deltaX: this.lastDelta.x,
+    deltaY: this.lastDelta.y, event
+  })
 
   onWheel = (event) => {
     let { deltaX, deltaY, deltaMode } = event

@@ -14,7 +14,8 @@
     "test": "bun test",
     "clean": "rm -rf ./dist",
     "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core --external @wareme/raf-nexus",
-    "dev": "bun run build --watch"
+    "dev:build": "bun run clean && bun build ./src/index.js --outdir ./dist --external @dark-engine/core --external @wareme/raf-nexus",
+    "dev": "bun run dev:build --watch"
   },
   "dependencies": {
     "@wareme/event-emitter": "workspace:*",
