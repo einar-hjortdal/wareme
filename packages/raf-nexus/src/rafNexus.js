@@ -4,14 +4,14 @@ export class RafNexus {
   callbacks
   now
 
-  constructor () {
+  constructor() {
     this.callbacks = []
     this.now = performance.now()
     requestAnimationFrame(this.raf)
   }
 
   addSortFn = (a, b) => a.priority - b.priority
-  removeFilterFn = ({ callback: cb }) => callback !== cb
+  removeFilterFn = (callbackToRemove) => ({ callback: cb }) => callbackToRemove !== cb
 
   add = (callback, priority) => {
     if (detectIsEmpty(priority)) {
@@ -23,8 +23,8 @@ export class RafNexus {
     return () => this.remove(callback)
   }
 
-  remove = (callback) => {
-    this.callbacks = this.callbacks.filter(this.removeFilterFn)
+  remove = (callbackToRemove) => {
+    this.callbacks = this.callbacks.filter(this.removeFilterFn(callbackToRemove))
   }
 
   raf = (now) => {
