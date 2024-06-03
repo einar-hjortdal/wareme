@@ -1,7 +1,7 @@
 import { component } from "@dark-engine/core";
 import { createGlobalStyle, styled } from "@dark-engine/styled"
 import { createRoot } from "@dark-engine/platform-browser";
-import { RafNexus } from "@wareme/utils";
+import { RafNexus } from "@wareme/raf-nexus";
 import { SmoothScrollingProvider, useSmoothScrolling } from '@wareme/smooth-scrolling'
 
 const rafNexus = new RafNexus()

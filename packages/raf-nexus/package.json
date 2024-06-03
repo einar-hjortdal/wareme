@@ -1,9 +1,10 @@
 {
-  "name": "@wareme/utils",
-  "description": "Utils for Dark applications",
-  "version": "3.4.0",
+  "name": "@wareme/raf-nexus",
+  "description": "Centralize requestAnimationFrame",
+  "version": "3.0.0",
   "keywords": [
-    "utils",
+    "requestAnimationFrame",
+    "raf",
     "Dark"
   ],
   "author": "Coachonko",
