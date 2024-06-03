@@ -237,7 +237,7 @@ export class Odayaka {
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
-      this.isScrolling = nisha(this.hasScrolled, 'native', false)
+      this.isScrolling = 'native'
       this.emit()
 
       if (this.velocity !== 0) {
