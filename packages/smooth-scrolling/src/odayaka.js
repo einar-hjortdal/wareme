@@ -5,7 +5,7 @@ import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { clamp, modulo } from './utils'
 import { VirtualScroll } from './virtualScroll'
-import { detectIsFunction } from '@dark-engine/core'
+import { detectIsEmpty, detectIsFunction } from '@dark-engine/core'
 
 // Odayaka does the following:
 // - listens to 'wheel' events
@@ -345,7 +345,9 @@ export class Odayaka {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
       this.reset()
-      onComplete?.(this)
+      if (!detectIsEmpty(onComplete) && detectIsFunction(onComplete)) {
+        onComplete(this)
+      }
       return
     }
 
@@ -386,7 +388,9 @@ export class Odayaka {
         if (completed) {
           this.reset()
           this.emit({ userData })
-          onComplete?.(this)
+          if (!detectIsEmpty(onComplete) && detectIsFunction(onComplete)) {
+            onComplete(this)
+          }
 
           // avoid emitting event twice
           this.__preventNextNativeScrollEvent = true

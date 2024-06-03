@@ -5,23 +5,19 @@ export class Store {
   state
   eventEmitter
 
-  constructor (state) {
+  constructor(state) {
     this.state = state
     this.eventEmitter = new EventEmitter()
   }
 
-  set (state) {
+  set = (state) => {
     this.state = state
     this.eventEmitter.emit(this.state)
   }
 
-  on (callback) {
-    this.eventEmitter.on(callback)
-  }
+  on = (callback) => this.eventEmitter.on(callback)
 
-  get () {
-    return this.state
-  }
+  get = () => this.state
 }
 
 export function useStore (store) {

@@ -1,7 +1,8 @@
+import { detectIsUndefined } from '@dark-engine/core'
 import { debounce } from './utils'
 
 export class Dimensions {
-  constructor ({
+  constructor({
     wrapper,
     content,
     autoResize = true,
@@ -28,8 +29,12 @@ export class Dimensions {
   }
 
   destroy () {
-    this.wrapperResizeObserver?.disconnect()
-    this.contentResizeObserver?.disconnect()
+    if (!detectIsUndefined(this.wrapperResizeObserver)) {
+      this.wrapperResizeObserver.disconnect()
+    }
+    if (!detectIsUndefined(this.contentResizeObserver)) {
+      this.contentResizeObserver.disconnect()
+    }
     window.removeEventListener('resize', this.debouncedResize, false)
   }
 
