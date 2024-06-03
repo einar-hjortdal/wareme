@@ -8,7 +8,7 @@ export class TranslationError extends Error {
   language/*: string */
   moreInfo/*: ?string */
 
-  constructor(id /*: string */, language /*: string */, moreInfo/*: ?string */) {
+  constructor (id /*: string */, language /*: string */, moreInfo/*: ?string */) {
     super(`Translation failed. id: ${id} language: ${language}`)
     this.id = id
     this.language = language
@@ -32,7 +32,7 @@ export class Translator {
   currentMessages/*: {[string]: string} */
   languageChangeEvents
 
-  constructor(lang/*: string */, messages/*: {[string]: string} */, onError/*: (error: TranslationError)=>void */) {
+  constructor (lang/*: string */, messages/*: {[string]: string} */, onError/*: (error: TranslationError)=>void */) {
     this.currentLanguage = lang
 
     if (detectIsEmpty(messages)) {

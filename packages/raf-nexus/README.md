@@ -1,6 +1,7 @@
 # raf-nexus
 
-RafNexus allows you to centralize requestAnimationFrame calls in one async loop.
+RafNexus allows you to centralize requestAnimationFrame calls in one async loop. RafNexus is highly 
+optimized for performance.
 
 ## Usage
 

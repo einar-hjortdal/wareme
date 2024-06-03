@@ -1,9 +1,10 @@
-import { detectIsEmpty } from "@dark-engine/core"
+import { detectIsEmpty } from '@dark-engine/core'
 
 export class RafNexus {
   callbacks
+  now
 
-  constructor() {
+  constructor () {
     this.callbacks = []
     this.now = performance.now()
     requestAnimationFrame(this.raf)

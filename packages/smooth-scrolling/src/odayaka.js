@@ -25,7 +25,7 @@ export class Odayaka {
   options
   targetScroll
   animatedScroll
-  constructor({
+  constructor ({
     wrapper = window,
     content = document.documentElement,
     eventsTarget = wrapper,

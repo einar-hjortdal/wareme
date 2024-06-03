@@ -6,7 +6,7 @@ function alwaysNewT (translator, idPrefix) {
 }
 
 function useMemoizedT (translator, idPrefix) {
-  return useCallback(alwaysNewT(translator, idPrefix), [translator, idPrefix,]);
+  return useCallback(alwaysNewT(translator, idPrefix), [translator, idPrefix])
 }
 
 export function useTranslation (idPrefix) {
