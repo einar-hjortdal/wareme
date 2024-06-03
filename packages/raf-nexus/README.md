@@ -10,4 +10,18 @@ optimized for performance.
 3. pass the callback to the RafNexus instance `const unsubscribe = rafNexus.add(onFrame, 0)`
 4. unsubscribe from the RafNexus instance to keep the loop small
 
-Note: it uses web APIs, check if you're in a browser before creating an instance.
+Note: it uses web APIs, remember to check if you're in a browser before creating an instance.
+
+```js
+import { detectIsBrowser } from '@dark-engine/platform-browser'
+import { RafNexus } from '@wareme/raf-nexus'
+
+const getRafNexus = () => {
+  if (detectIsBrowser()) {
+    return new RafNexus()
+  }
+  return null
+}
+
+const rafNexus = getRafNexus()
+```
