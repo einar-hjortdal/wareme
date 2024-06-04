@@ -59,6 +59,8 @@ export const useSmoothScrolling = (callback, deps = [], priority = 0) => {
 
 export const SmoothScrollingProvider = component(({
   rafNexus,
+  wrapperRef,
+  contentRef,
   slot,
   root = false,
   options = {},
@@ -67,8 +69,22 @@ export const SmoothScrollingProvider = component(({
   className,
   ...props
 }) => {
-  const wrapperRef = useRef(null)
-  const contentRef = useRef(null)
+  const defaultWrapperRef = useRef(null)
+  const defaultContentRef = useRef(null)
+
+  const getWrapperRef = () => {
+    if (detectIsEmpty(wrapperRef)) {
+      return defaultWrapperRef
+    }
+    return wrapperRef
+  }
+  const getContentRef = () => {
+    if (detectIsEmpty(contentRef)) {
+      return defaultContentRef
+    }
+    return contentRef
+  }
+
   const [odayaka, setOdayaka] = useState(null)
   const callbacksRefs = useRef([])
 
@@ -85,7 +101,7 @@ export const SmoothScrollingProvider = component(({
 
   useEffect(() => {
     const odayaka = new Odayaka({
-      ...options, ...(!root && { wrapper: wrapperRef.current, content: contentRef.current })
+      ...options, ...(!root && { wrapper: getWrapperRef().current, content: getContentRef().current })
     })
 
     setOdayaka(odayaka)
@@ -140,8 +156,8 @@ export const SmoothScrollingProvider = component(({
 
   return (
     <OdayakaContext value={{ odayaka, addCallback, removeCallback }}>
-      <div ref={wrapperRef} className={className} {...props}>
-        <div ref={contentRef}>{slot}</div>
+      <div ref={getWrapperRef()} className={className} {...props}>
+        <div ref={getContentRef()}>{slot}</div>
       </div>
     </OdayakaContext>
   )
