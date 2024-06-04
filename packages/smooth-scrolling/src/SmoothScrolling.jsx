@@ -69,21 +69,15 @@ export const SmoothScrollingProvider = component(({
   className,
   ...props
 }) => {
-  const defaultWrapperRef = useRef(null)
-  const defaultContentRef = useRef(null)
+  const getRef = (refProp) => {
+    if (detectIsEmpty(refProp)) {
+      return useRef(null)
+    }
+    return refProp
+  }
+  const wRef = getRef(wrapperRef)
+  const cRef = getRef(contentRef)
 
-  const getWrapperRef = () => {
-    if (detectIsEmpty(wrapperRef)) {
-      return defaultWrapperRef
-    }
-    return wrapperRef
-  }
-  const getContentRef = () => {
-    if (detectIsEmpty(contentRef)) {
-      return defaultContentRef
-    }
-    return contentRef
-  }
 
   const [odayaka, setOdayaka] = useState(null)
   const callbacksRefs = useRef([])
@@ -101,7 +95,7 @@ export const SmoothScrollingProvider = component(({
 
   useEffect(() => {
     const odayaka = new Odayaka({
-      ...options, ...(!root && { wrapper: getWrapperRef().current, content: getContentRef().current })
+      ...options, ...(!root && { wrapper: wRef.current, content: cRef.current })
     })
 
     setOdayaka(odayaka)
@@ -156,8 +150,8 @@ export const SmoothScrollingProvider = component(({
 
   return (
     <OdayakaContext value={{ odayaka, addCallback, removeCallback }}>
-      <div ref={getWrapperRef()} className={className} {...props}>
-        <div ref={getContentRef()}>{slot}</div>
+      <div ref={wRef} className={className} {...props}>
+        <div ref={cRef}>{slot}</div>
       </div>
     </OdayakaContext>
   )

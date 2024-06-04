@@ -1,9 +1,3 @@
-import { formatErrorMsg } from '@dark-engine/core'
-
-export const throwError = (errorMsg) => {
-  throw new Error(formatErrorMsg(errorMsg, 'odayaka'))
-}
-
 export const debounce = (callback, delay) => {
   let timer
   return (...args) => {
