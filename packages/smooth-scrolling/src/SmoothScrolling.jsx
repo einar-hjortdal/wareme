@@ -53,7 +53,7 @@ export const useSmoothScrolling = (callback, deps = [], priority = 0) => {
 
 //
 //
-// NunjakuProvider
+// Provider
 //
 //
 

@@ -5,7 +5,7 @@ import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { clamp, modulo } from './utils'
 import { VirtualScroll } from './virtualScroll'
-import { detectIsEmpty, detectIsFunction } from '@dark-engine/core'
+import { detectIsEmpty, detectIsFunction, detectIsString } from '@dark-engine/core'
 
 // Odayaka does the following:
 // - listens to 'wheel' events
@@ -36,7 +36,7 @@ export class Odayaka {
     touchInertiaMultiplier = 35,
     duration,
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    lerp = !duration && 0.1,
+    lerp = 0.1,
     infinite = false,
     orientation = 'vertical',
     gestureOrientation = 'vertical',
@@ -46,7 +46,7 @@ export class Odayaka {
     prevent = false
   } = {}) {
     // if wrapper is html or body, fallback to window
-    if (wrapper === document.documentElement || wrapper === document.body) {
+    if (!wrapper || wrapper === document.documentElement || wrapper === document.body) {
       wrapper = window
     }
 
@@ -156,6 +156,7 @@ export class Odayaka {
     const prevent = this.options.prevent
 
     if (
+      // node instanceof Element &&
       Boolean(composedPath.find(
         (node) =>
           nisha(detectIsFunction(prevent), () => prevent(node), prevent) ||
@@ -186,7 +187,11 @@ export class Odayaka {
 
     let delta = deltaY
     if (this.options.gestureOrientation === 'both') {
-      delta = nisha(Math.abs(deltaY) > Math.abs(deltaX), deltaY, deltaX)
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        delta = deltaY
+      } else {
+        delta = deltaX
+      }
     } else if (this.options.gestureOrientation === 'horizontal') {
       delta = deltaX
     }
@@ -216,10 +221,8 @@ export class Odayaka {
     this.dimensions.resize()
   }
 
-  emit ({ userData = {} } = {}) {
-    this.userData = userData
+  emit () {
     this.eventEmitter.emit(this)
-    this.userData = {}
   }
 
   onNativeScroll = () => {
@@ -289,7 +292,7 @@ export class Odayaka {
       lock = false,
       duration = this.options.duration,
       easing = this.options.easing,
-      lerp = !duration && this.options.lerp,
+      lerp = this.options.lerp,
       onStart,
       onComplete,
       force = false, // scroll even if stopped
@@ -300,9 +303,9 @@ export class Odayaka {
     if ((this.isStopped || this.isLocked) && !force) return
 
     // keywords
-    if (['top', 'left', 'start'].includes(target)) {
+    if (detectIsString(target) && ['top', 'left', 'start'].includes(target)) {
       target = 0
-    } else if (['bottom', 'right', 'end'].includes(target)) {
+    } else if (detectIsString(target) && ['bottom', 'right', 'end'].includes(target)) {
       target = this.limit
     } else {
       let node
@@ -310,6 +313,7 @@ export class Odayaka {
       if (typeof target === 'string') {
         // CSS selector
         node = document.querySelector(target)
+        // target instanceof HTMLElement && target?.nodeType
       } else if (target?.nodeType) {
         // Node element
         node = target
@@ -318,7 +322,7 @@ export class Odayaka {
       if (node) {
         if (this.options.wrapper !== window) {
           // nested scroll offset correction
-          const wrapperRect = this.options.wrapper.getBoundingClientRect()
+          const wrapperRect = this.rootElement.getBoundingClientRect()
           offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top
         }
 
@@ -341,17 +345,24 @@ export class Odayaka {
       target = clamp(0, target, this.limit)
     }
 
+    if (target === this.targetScroll) {
+      return
+    }
+
+    this.userData = userData
+
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
       this.reset()
+      this.preventNextNativeScrollEvent()
+      this.emit()
       if (!detectIsEmpty(onComplete) && detectIsFunction(onComplete)) {
         onComplete(this)
       }
+      this.userData = {}
       return
     }
-
-    if (target === this.targetScroll) return
 
     if (!programmatic) {
       this.targetScroll = target
@@ -383,24 +394,36 @@ export class Odayaka {
           this.targetScroll = value
         }
 
-        if (!completed) this.emit({ userData })
+        if (!completed) this.emit()
 
         if (completed) {
           this.reset()
-          this.emit({ userData })
+          this.emit()
           if (!detectIsEmpty(onComplete) && detectIsFunction(onComplete)) {
             onComplete(this)
           }
+          this.userData = {}
 
           // avoid emitting event twice
-          this.__preventNextNativeScrollEvent = true
+          this.preventNextNativeScrollEvent()
         }
       }
     })
   }
 
+  preventNextNativeScrollEvent () {
+    this.__preventNextNativeScrollEvent = true
+
+    requestAnimationFrame(() => {
+      delete this.__preventNextNativeScrollEvent
+    })
+  }
+
   get rootElement () {
-    return nisha(this.options.wrapper === window, document.documentElement, this.options.wrapper)
+    if (this.options.wrapper === window) {
+      return document.documentElement
+    }
+    return this.options.wrapper
   }
 
   get limit () {

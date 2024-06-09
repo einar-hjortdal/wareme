@@ -42,7 +42,7 @@ export class Animate {
   }
 
   // Oprional: lerp, duration, easing, onStart, onUpdate
-  fromTo (from, to, { lerp = 0.1, duration = 1, easing = (t) => t, onStart, onUpdate }) {
+  fromTo (from, to, { lerp, duration, easing, onStart, onUpdate }) {
     this.from = from
     this.value = from
     this.to = to
