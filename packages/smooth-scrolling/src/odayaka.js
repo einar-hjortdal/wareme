@@ -313,8 +313,7 @@ export class Odayaka {
       if (typeof target === 'string') {
         // CSS selector
         node = document.querySelector(target)
-        // target instanceof HTMLElement && target?.nodeType
-      } else if (target?.nodeType) {
+      } else if (target instanceof HTMLElement && target?.nodeType) {
         // Node element
         node = target
       }
