@@ -1,3 +1,5 @@
 export { invariant } from './invariant'
 export { nisha } from './nisha'
 export { nishaho } from './nishaho'
+export * from './logic.js'
+export * from './detect.js'

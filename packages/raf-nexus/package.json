@@ -1,7 +1,7 @@
 {
   "name": "@wareme/raf-nexus",
-  "description": "Centralize requestAnimationFrame",
-  "version": "3.0.3",
+  "description": "Centralize requestAnimationFrame in Dark applications",
+  "version": "3.1.0",
   "keywords": [
     "requestAnimationFrame",
     "raf",

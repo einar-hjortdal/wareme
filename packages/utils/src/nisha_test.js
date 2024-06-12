@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { nisha } from "./nisha";
+import { nisha } from './nisha'
 
 const isTruthy = 'truthy'
 const isFalsy = 'falsy'
