@@ -6,6 +6,3 @@ Odayaka:
 
 virtualScroll:
 - use arrays instead of objects
-
-SmoothScrolling:
-- get rafNexus from context if available and if not provided as prop

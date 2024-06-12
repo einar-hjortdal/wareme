@@ -1,3 +1,9 @@
+import { formatErrorMsg } from "@dark-engine/core"
+
+export const throwError = (errorMsg) => {
+  throw new Error(formatErrorMsg(errorMsg, 'smooth-scrolling'))
+}
+
 export const debounce = (callback, delay) => {
   let timer
   return (...args) => {

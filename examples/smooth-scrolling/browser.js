@@ -1,7 +1,7 @@
 import { component } from '@dark-engine/core'
 import { createGlobalStyle, styled } from '@dark-engine/styled'
 import { createRoot } from '@dark-engine/platform-browser'
-import { RafNexusProvider, useRafNexus } from '@wareme/raf-nexus'
+import { RafNexusProvider } from '@wareme/raf-nexus'
 import { SmoothScrollingProvider, useSmoothScrolling } from '@wareme/smooth-scrolling'
 
 const Entry = component(({ slot }) => {
@@ -41,13 +41,12 @@ const Consumer = component(() => {
 })
 
 const App = component(() => {
-  const { rafNexus } = useRafNexus()
   return (
     <>
       <GlobalStyle />
       <StyledSmoothScrollingProvider
-        // root // uses html element
-        rafNexus={rafNexus} // required
+      // root // uses html element
+      // rafNexus // rafNexus instance can be provided manually
       // options // Odayaka options, described in odayaka.js
       // autoRaf // if false, odayaka.raf needs to be called manually
       // rafPriority // rafNexus execution priority

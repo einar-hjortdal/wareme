@@ -8,9 +8,11 @@ import {
   useContext,
   detectIsEmpty
 } from '@dark-engine/core'
+import { useRafNexus } from '@wareme/raf-nexus'
 
 import { Odayaka } from './odayaka'
 import { Store, useStore } from './store'
+import { throwError } from './utils'
 
 //
 //
@@ -69,6 +71,14 @@ export const SmoothScrollingProvider = component(({
   className,
   ...props
 }) => {
+  if (detectIsEmpty(rafNexus)) {
+    const rafNexusProviderContext = useRafNexus()
+    if (detectIsEmpty(rafNexusProviderContext)) {
+      throwError('rafNexus prop was not provided and not found in context')
+    }
+    rafNexus = rafNexusProviderContext.rafNexus
+  }
+
   const getRef = (refProp) => {
     if (detectIsEmpty(refProp)) {
       return useRef(null)
