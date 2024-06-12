@@ -25,3 +25,8 @@ const getRafNexus = () => {
 
 const rafNexus = getRafNexus()
 ```
+
+### RafNexusProvider and useRafNexus
+
+You can also wrap your applciation in `RafNexusProvider`, this will make the `RafNexus` instance available 
+to all children through the `useRafNexus` hook.
