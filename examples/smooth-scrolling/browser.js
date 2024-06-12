@@ -4,11 +4,6 @@ import { createRoot } from '@dark-engine/platform-browser'
 import { RafNexusProvider } from '@wareme/raf-nexus'
 import { SmoothScrollingProvider, useSmoothScrolling } from '@wareme/smooth-scrolling'
 
-const Entry = component(({ slot }) => {
-  return <RafNexusProvider>{slot}</RafNexusProvider>
-})
-
-
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
@@ -42,7 +37,7 @@ const Consumer = component(() => {
 
 const App = component(() => {
   return (
-    <>
+    <RafNexusProvider>
       <GlobalStyle />
       <StyledSmoothScrollingProvider
       // root // uses html element
@@ -53,8 +48,8 @@ const App = component(() => {
       >
         <Consumer />
       </StyledSmoothScrollingProvider>
-    </>
+    </RafNexusProvider>
   )
 })
 
-createRoot(document.getElementById('dark-root')).render(<Entry><App /></Entry>)
+createRoot(document.getElementById('dark-root')).render(<App />)
