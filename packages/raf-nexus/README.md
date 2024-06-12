@@ -30,3 +30,25 @@ const rafNexus = getRafNexus()
 
 You can also wrap your applciation in `RafNexusProvider`, this will make the `RafNexus` instance available 
 to all children through the `useRafNexus` hook.
+
+The `RafNexusProvider` component accepts a `rafNexus` prop. You can pass it your instance of `RafNexus`:
+
+```js
+import { RafNexus, RafNexusProvider } from '@wareme/raf-nexus'
+
+const rafNexusInstance = new RafNexus()
+
+const Entry = component(({ slot }) => {
+  return <RafNexusProvider rafNexus={rafNexusInstance}>{slot}</RafNexusProvider>
+})
+```
+
+You can also let `RafNexusProvider` create an instance internally.
+
+```js
+import { RafNexusProvider } from '@wareme/raf-nexus'
+
+const Entry = component(({ slot }) => {
+  return <RafNexusProvider>{slot}</RafNexusProvider>
+})
+```
