@@ -2,9 +2,16 @@ import { component } from '@dark-engine/core'
 import { createGlobalStyle, styled } from '@dark-engine/styled'
 import { createRoot } from '@dark-engine/platform-browser'
 import { RafNexus } from '@wareme/raf-nexus'
+import { RafNexusProvider, useRafNexus } from '@wareme/raf-nexus'
 import { SmoothScrollingProvider, useSmoothScrolling } from '@wareme/smooth-scrolling'
 
 const rafNexus = new RafNexus()
+
+// This seems stupid in this example, because it is such a small application.
+const Entry = component(({ slot }) => {
+  return <RafNexusProvider rafNexus={rafNexus}>{slot}</RafNexusProvider>
+})
+
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -38,6 +45,7 @@ const Consumer = component(() => {
 })
 
 const App = component(() => {
+  const { rafNexus } = useRafNexus()
   return (
     <>
       <GlobalStyle />
@@ -54,4 +62,4 @@ const App = component(() => {
   )
 })
 
-createRoot(document.getElementById('dark-root')).render(<App />)
+createRoot(document.getElementById('dark-root')).render(<Entry><App /></Entry>)
