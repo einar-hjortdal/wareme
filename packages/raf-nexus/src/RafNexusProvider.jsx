@@ -14,17 +14,13 @@ const createRafNexusInstance = () => {
   return null
 }
 
-const getRafNexus = (rafNexusProp) => {
-  if (detectIsEmpty(rafNexusProp)) {
-    return createRafNexusInstance()
-  }
-  return rafNexusProp
-}
-
 export const RafNexusProvider = component(({ rafNexus, slot }) => {
   const value = useMemo(() => {
-    const currentRafNexus = getRafNexus(rafNexus);
-    return { rafNexus: currentRafNexus };
+    if (detectIsEmpty(rafNexus)) {
+      const newRafNexusInstance = createRafNexusInstance()
+      return { rafNexus: newRafNexusInstance }
+    }
+    return { rafNexus }
   }, [rafNexus])
   return <RafNexusContext value={value}>{slot}</RafNexusContext>
 })
