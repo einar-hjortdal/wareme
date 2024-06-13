@@ -6,4 +6,9 @@ The engine that powers it is called Odayaka.
 
 ## Usage
 
-See [examples/smooth-scrolling](../../examples/smooth-scrolling)
+1. Add smooth-scrolling to your project
+```bash
+bun add @wareme/utils @wareme/event-emitter @wareme/raf-nexus @wareme/smooth-scrolling
+```
+
+2. TODO - See [examples/smooth-scrolling](../../examples/smooth-scrolling) for now

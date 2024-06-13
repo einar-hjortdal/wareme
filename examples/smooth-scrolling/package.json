@@ -13,6 +13,8 @@
     "@dark-engine/styled": "^1.4.1",
     "@dark-engine/platform-browser": "^1.4.1",
     "@wareme/raf-nexus": "workspace:*",
+    "@wareme/event-emitter": "workspace:*",
+    "@wareme/utils": "workspace:*",
     "@wareme/smooth-scrolling": "workspace:*",
     "elysia": "^1.0.22"
   },

@@ -1,4 +1,4 @@
-# Dark translator
+# translations
 
 ## Features
 
@@ -10,7 +10,12 @@
 
 ## Usage
 
-1. Create a `Translator` instance
+1. Add the package to your project
+```bash
+bun add @wareme/event-emitter @wareme/translations
+```
+
+2. Create a `Translator` instance
 ```js
 import { Translator } from '@wareme/translations'
 
@@ -18,7 +23,8 @@ const currentLanguage = 'en'
 const messages = {'notFound.title': 'This page does not exist'}
 const translator = new Translator(currentLanguage, messages)
 ```
-2. Add the context provider to your application and give it the instance
+
+3. Add the context provider to your application and give it the instance
 ```js
 import { component } from '@dark-engine/core'
 import { Router } from '@dark-engine/web-router'
@@ -33,7 +39,8 @@ const App = component(({ currentPath, translator }) => {
   )
 })
 ```
-3. Retrieve the `t` function with the `useTranslations` hook inside of your components
+
+4. Retrieve the `t` function with the `useTranslations` hook inside of your components
 ```js
 import { component } from '@dark-engine/core'
 import { useTranslation } from '@wareme/translations'
@@ -45,7 +52,8 @@ const NotFound = component(() => {
 
 export default NotFound
 ```
-4. Change language with the `changeLanguage` method
+
+5. Change language with the `changeLanguage` method
 ```js
 import { component } from '@dark-engine/core'
 import { useTranslation } from '@wareme/translations'
