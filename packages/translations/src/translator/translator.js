@@ -1,18 +1,19 @@
 // @flow
-import { detectIsEmpty, detectIsString } from '@dark-engine/core'
+import { detectIsEmpty, detectIsString, formatErrorMsg, illegal } from '@dark-engine/core'
 import { EventEmitter } from '@wareme/event-emitter'
 import { getTranslationParts } from './parser'
+
+const LIB = '@wareme/translations'
+const throwError = (errorMsg) => illegal(errorMsg, LIB)
 
 export class TranslationError extends Error {
   id/*: string */
   language/*: string */
-  moreInfo/*: ?string */
 
-  constructor (id /*: string */, language /*: string */, moreInfo/*: ?string */) {
-    super(`Translation failed. id: ${id} language: ${language}`)
+  constructor(id /*: string */, language /*: string */) {
+    super(formatErrorMsg(`Translation failed. id: ${id} language: ${language}`, LIB))
     this.id = id
     this.language = language
-    this.moreInfo = moreInfo
   }
 }
 
@@ -26,31 +27,26 @@ type FormatMessageOptions = Record<string, any> & { [key: string]: any };
 */
 
 export class Translator {
-  onError /*: (error: TranslationError) => void */
+  onError/*: (error: TranslationError) => void */ = console.error
   localeData /*: Array<LocaleData> */
   currentLanguage/*: string */
   currentMessages/*: {[string]: string} */
   languageChangeEvents
 
-  constructor (lang/*: string */, messages/*: {[string]: string} */, onError/*: (error: TranslationError)=>void */) {
+  constructor(lang/*: string */, messages/*: {[string]: string} */, onError/*: (error: TranslationError)=>void */) {
     this.currentLanguage = lang
 
     if (detectIsEmpty(messages)) {
-      throw new Error('`messages` should be provided when creating a new Translator instance')
+      throwError('`messages` must be provided when creating a new Translator instance')
     }
 
-    if (detectIsEmpty(onError)) {
-      this.onError = console.error
-    } else {
+    if (!detectIsEmpty(onError)) {
       this.onError = onError
     }
 
     this.languageChangeEvents = new EventEmitter()
     // TODO handle when user provides LocaleData instead of messages (allow preloading multiple languages)
-    this.localeData = [{
-      language: lang,
-      messages
-    }]
+    this.localeData = [{ language: lang, messages }]
     this.currentMessages = messages
   }
 
@@ -71,7 +67,7 @@ export class Translator {
         }
       }
       if (messagesFound === false) {
-        this.onError('A language with no associated messages was selected.')
+        throwError('A language with no associated messages was selected.')
       }
       this.#emit()
       return
