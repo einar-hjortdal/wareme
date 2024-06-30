@@ -1,6 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test'
 
-import { EventEmitter } from './eventEmitter'
+import { EventEmitter } from './EventEmitter'
 
 describe('EventEmitter', () => {
   it(('should add listeners'), () => {
