@@ -1,8 +1,6 @@
-import { formatErrorMsg } from "@dark-engine/core"
+import { illegal } from "@dark-engine/core"
 
-export const throwError = (errorMsg) => {
-  throw new Error(formatErrorMsg(errorMsg, 'smooth-scrolling'))
-}
+export const throwError = (errorMsg) => illegal(errorMsg, 'smooth-scrolling')
 
 export const debounce = (callback, delay) => {
   let timer

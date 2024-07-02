@@ -1,7 +1,7 @@
 {
   "name": "@wareme/smooth-scrolling",
   "description": "High performance smooth scrolling for Dark applications",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "keywords": [
     "smooth-scrolling",
     "Dark"
@@ -13,8 +13,8 @@
   "scripts": {
     "test": "bun test",
     "clean": "rm -rf ./dist",
-    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core --external @wareme/raf-nexus --external @wareme/utils --external @wareme/event-emitter",
-    "dev:build": "bun run clean && bun build ./src/index.js --outdir ./dist --external @dark-engine/core --external @wareme/raf-nexus --external @wareme/utils --external @wareme/event-emitter",
+    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core --external @wareme/raf-nexus --external @wareme/utils --external @wareme/event-emitter --external @dark-engine/styled",
+    "dev:build": "bun run clean && bun build ./src/index.js --outdir ./dist --external @dark-engine/core --external @wareme/raf-nexus --external @wareme/utils --external @wareme/event-emitter --external @dark-engine/styled",
     "dev": "bun run dev:build --watch"
   },
   "devDependencies": {
@@ -22,6 +22,7 @@
   },
   "peerDependencies": {
     "@dark-engine/core": "^1.4.1",
+    "@dark-engine/styled": "^1.4.1",
     "@wareme/raf-nexus": "workspace:*",
     "@wareme/event-emitter": "workspace:*",
     "@wareme/utils": "workspace:*"

@@ -18,6 +18,8 @@ export class Odayaka {
   __isScrolling = false
   __isStopped = false
   __isLocked = false
+  __preventNextNativeScrollEvent
+  __resetVelocityTimeout
   time
   userData
   lastVelocity
@@ -26,7 +28,7 @@ export class Odayaka {
   options
   targetScroll
   animatedScroll
-  constructor({
+  constructor ({
     wrapper = window,
     content = document.documentElement,
     eventsTarget = wrapper,
@@ -84,6 +86,7 @@ export class Odayaka {
     this.targetScroll = this.animatedScroll = this.actualScroll
 
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
+    this.options.wrapper.addEventListener('pointerdown', this.onPointerDown, false)
 
     this.virtualScroll = new VirtualScroll(eventsTarget, {
       touchMultiplier,
@@ -94,6 +97,7 @@ export class Odayaka {
 
   destroy () {
     this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, false)
+    this.options.wrapper.removeEventListener('pointerdown', this.onPointerDown, false)
     this.virtualScroll.destroy()
     this.dimensions.destroy()
     this.cleanUpClassName()
@@ -113,6 +117,13 @@ export class Odayaka {
       this.rootElement.scrollLeft = scroll
     } else {
       this.rootElement.scrollTop = scroll
+    }
+  }
+
+  onPointerDown = (event) => {
+    // reset on mouse wheel down
+    if (event.button === 1) {
+      this.reset()
     }
   }
 
