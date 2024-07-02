@@ -8,8 +8,7 @@ import {
   detectIsNull,
   detectIsString,
   detectIsArray,
-  detectIsUndefined,
-  hasKeys
+  detectIsUndefined
 } from '@dark-engine/core'
 
 const throwError = (errorMsg) => {
@@ -467,14 +466,7 @@ const listHandler = async (ctx, session) => {
     return {}
   }
 
-  // This is a simple example of query parameter filtering strategy. Adapt it to your own needs.
-  // If the catalog becomes too large, consider creating a second catalog file for one type of file.
-  const query = ctx.query
-  if (!hasKeys(query)) {
-    return catalog
-  }
-
-  const category = query.category
+  const category = ctx.query.category
   if (detectIsString(category)) {
     const files = keys(catalog)
     const res = {}
@@ -516,8 +508,9 @@ const fileUploadHandler = async (ctx, session) => {
   await Bun.write(newFile, file)
   const { catalog, version } = await ctx.cacheStore.getCatalog()
   const newCatalogFile = {
-    [fileName]: { createdOn: new Date() }
+    [fileName]: { createdOn: new Date(), ...ctx.query }
   }
+
   const newCatalog = { ...catalog, ...newCatalogFile }
 
   // Delete file if fail to update catalog
@@ -555,17 +548,19 @@ const fileUpdateHandler = async (ctx, session) => {
 
   const { catalog, version } = await ctx.cacheStore.getCatalog()
 
-  if (detectIsUndefined(catalog[fileName])) {
+  const oldFileData = catalog[fileName]
+  if (detectIsUndefined(oldFileData)) {
     ctx.set.status = 400
     return 'File not found in catalog'
   }
 
   // Do not allow changes to createdOn
-  delete fileData.createdOn
+  const createdOn = oldFileData.createdOn
+  const newFileData = { ...fileData, createdOn }
 
-  const newCatalog = { ...catalog, [fileName]: { ...fileData } }
+  const newCatalog = { ...catalog, [fileName]: newFileData }
   await updateCatalog(newCatalog, version)
-  return catalog.files
+  return newCatalog
 }
 
 const fileDeleteHandler = async (ctx, session) => {
