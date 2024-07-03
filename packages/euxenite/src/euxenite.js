@@ -8,7 +8,8 @@ import {
   detectIsNull,
   detectIsString,
   detectIsArray,
-  detectIsUndefined
+  detectIsUndefined,
+  hasKeys
 } from '@dark-engine/core'
 
 const throwError = (errorMsg) => {
@@ -382,23 +383,35 @@ const adminRetrieveHandler = async (ctx, session) => {
 // loginHandler expects application/json
 const loginHandler = async (ctx) => {
   try {
-    if (detectIsEmpty(ctx.body.email)) {
+    const { email, password } = ctx.body
+    if (detectIsEmpty(email) || detectIsEmpty(password)) {
       ctx.set.status = 401
-      return 'Email must be provided'
+      return 'Both email and password must be provided'
     }
 
-    const { admin } = await ctx.cacheStore.getAdmin()
-    if (detectIsNull(admin)) {
-      ctx.set.status = 401
-      return 'Admin missing, create a new admin first'
+    const { admin, adminVersion } = await ctx.cacheStore.getAdmin()
+
+    // Configure an admin for the first time
+    if (admin === null) {
+      const passwordHash = await createPasswordHash(password)
+      const newAdmin = { email, passwordHash }
+      await updateAdmin(newAdmin, adminVersion)
+
+      // Create session for the new admin
+      const expires = getNewSessionExpirationDate()
+      const sessionData = await createSession(expires)
+      const { sessionId } = sessionData
+      const cookie = createCookie(sessionId)
+      ctx.set.cookie[lib] = cookie
+      return { sessionId }
     }
 
-    if (ctx.body.email !== admin.email) {
+    if (email !== admin.email) {
       ctx.set.status = 401
       return 'Email or password not correct'
     }
 
-    const isMatch = await verifyPassword(ctx.body.password, admin.passwordHash)
+    const isMatch = await verifyPassword(password, admin.passwordHash)
     if (isMatch === false) {
       ctx.set.status = 401
       return 'Email or password not correct'
@@ -418,39 +431,18 @@ const loginHandler = async (ctx) => {
 }
 
 // updateAdminHandler expects application/json
-const updateAdminHandler = async (ctx) => {
-  try {
-    const { email, password } = ctx.body
-    if (detectIsEmpty(email) || detectIsEmpty(password)) {
-      ctx.set.status = 401
-      return 'Must provide both email and password'
-    }
-
-    const { admin, adminVersion } = await ctx.cacheStore.getAdmin()
-
-    // Configure an admin for the first time
-    if (admin === null) {
-      const passwordHash = await createPasswordHash(password)
-      const newAdmin = { email, passwordHash }
-      await updateAdmin(newAdmin, adminVersion)
-      return `Admin ${email} created`
-    }
-
-    const session = await loadSession(ctx.cookie)
-    if (detectIsNull(session)) {
-      ctx.set.status = 401
-      return 'Unauthorized'
-    }
-
-    const passwordHash = await createPasswordHash(password)
-    const newAdmin = { email, passwordHash }
-    await updateAdmin(newAdmin, adminVersion)
-    return `Admin ${email} updated`
-  } catch (error) {
-    console.error(error)
-    ctx.set.status = 500
-    return 'Internal Server Error'
+const adminUpdateHandler = async (ctx) => {
+  const { email, password } = ctx.body
+  if (detectIsEmpty(email) || detectIsEmpty(password)) {
+    ctx.set.status = 401
+    return 'Must provide both email and password'
   }
+  const { adminVersion } = await ctx.cacheStore.getAdmin()
+
+  const passwordHash = await createPasswordHash(password)
+  const newAdmin = { email, passwordHash }
+  await updateAdmin(newAdmin, adminVersion)
+  return `Admin ${email} updated`
 }
 
 const sessionEndHandler = async (ctx, session) => {
@@ -466,22 +458,44 @@ const listHandler = async (ctx, session) => {
     return {}
   }
 
-  const category = ctx.query.category
-  if (detectIsString(category)) {
-    const files = keys(catalog)
-    const res = {}
-    for (let i = 0, len = files.length; i < len; i++) {
-      const fileKey = files[i]
-      const fileData = catalog[fileKey]
-      const fileCategory = fileData.category
-      if (detectIsString(fileCategory) && fileCategory === category) {
-        res[fileKey] = fileData
-      }
-    }
-    return res
+  const query = ctx.query
+  if (!hasKeys(query)) {
+    return catalog
   }
 
-  return catalog
+  const queryKeys = keys(query)
+  const queryValues = []
+  for (let i = 0, len = queryKeys.length; i < len; i++) {
+    const queryKey = queryKeys[i]
+    const queryValue = query[queryKey]
+    queryValues.push(queryValue)
+  }
+
+  const filterCatalog = (catalogData, qKeys, qValues) => {
+    const result = { ...catalogData }
+    const files = keys(catalogData)
+    const iKey = qKeys[0]
+    const iValue = qValues[0]
+    for (let i = 0, len = files.length; i < len; i++) {
+      const fileKey = files[i]
+      const file = result[fileKey]
+      const filteredProperty = file[iKey]
+      if (detectIsUndefined(filteredProperty) || filteredProperty !== iValue) {
+        delete result[fileKey]
+      }
+    }
+
+    if (qKeys.length === 1) {
+      return result
+    }
+
+    const newQKeys = qKeys.slice(1)
+    const newQValues = qValues.slice(1)
+    return filterCatalog(result, newQKeys, newQValues)
+  }
+
+  const filteredCatalog = filterCatalog(catalog, queryKeys, queryValues)
+  return filteredCatalog
 }
 
 // fileUploadHandler expects multipart/form-data
@@ -507,11 +521,11 @@ const fileUploadHandler = async (ctx, session) => {
   const newFile = Bun.file(`${publicDirectory}/${fileName}`)
   await Bun.write(newFile, file)
   const { catalog, version } = await ctx.cacheStore.getCatalog()
-  const newCatalogFile = {
+
+  const newCatalog = {
+    ...catalog,
     [fileName]: { createdOn: new Date(), ...ctx.query }
   }
-
-  const newCatalog = { ...catalog, ...newCatalogFile }
 
   // Delete file if fail to update catalog
   try {
@@ -556,7 +570,8 @@ const fileUpdateHandler = async (ctx, session) => {
 
   // Do not allow changes to createdOn
   const createdOn = oldFileData.createdOn
-  const newFileData = { ...fileData, createdOn }
+  const updatedOn = new Date()
+  const newFileData = { ...fileData, createdOn, updatedOn }
 
   const newCatalog = { ...catalog, [fileName]: newFileData }
   await updateCatalog(newCatalog, version)
@@ -598,6 +613,7 @@ const cacheStore = await createNewCacheStore()
 
 // workaround https://github.com/elysiajs/elysia/issues/688
 const wrappedAdminRetrieveHandler = ctx => withSession(ctx, adminRetrieveHandler)
+const wrappedAdminUpdateHandler = ctx => withSession(ctx, adminUpdateHandler)
 const wrappedSessionEndHandler = ctx => withSession(ctx, sessionEndHandler)
 const wrappedFileUploadHandler = ctx => withSession(ctx, fileUploadHandler)
 const wrappedFileUpdateHandler = ctx => withSession(ctx, fileUpdateHandler)
@@ -608,7 +624,7 @@ export const euxenite = new Elysia()
   .decorate('cacheStore', cacheStore)
   .get('/api/euxenite/auth', ctx => wrappedAdminRetrieveHandler(ctx))
   .post('/api/euxenite/auth', ctx => loginHandler(ctx))
-  .put('/api/euxenite/auth', ctx => updateAdminHandler(ctx))
+  .put('/api/euxenite/auth', ctx => wrappedAdminUpdateHandler(ctx))
   .delete('/api/euxenite/auth', ctx => wrappedSessionEndHandler(ctx))
   .get('/api/euxenite/files', ctx => listHandler(ctx))
   .post('/api/euxenite/files/:fileName', ctx => wrappedFileUploadHandler(ctx))
