@@ -501,8 +501,8 @@ const listHandler = async (ctx, session) => {
 // fileUploadHandler expects multipart/form-data
 // It can only process one file per request
 const fileUploadHandler = async (ctx, session) => {
-  const fileName = ctx.params.fileName
-  if (detectIsEmpty(fileName)) {
+  const filename = ctx.params.filename
+  if (detectIsEmpty(filename)) {
     ctx.set.status = 400
     return 'A file name must be provided'
   }
@@ -518,9 +518,20 @@ const fileUploadHandler = async (ctx, session) => {
     return 'Can only process one file at once'
   }
 
-  const newFile = Bun.file(`${publicDirectory}/${fileName}`)
-  await Bun.write(newFile, file)
   const { catalog, version } = await ctx.cacheStore.getCatalog()
+  if (!detectIsNull(catalog)) {
+    const catalogKeys = keys(catalog)
+    for (let i = 0, len = catalogKeys.length; i < len; i++) {
+      const catalogFile = catalogKeys[i]
+      if (catalogFile === filename) {
+        ctx.set.status = 409
+        return 'File already exists'
+      }
+    }
+  }
+
+  const newFile = Bun.file(`${publicDirectory}/${filename}`)
+  await Bun.write(newFile, file)
 
   const newFileData = { createdOn: new Date(), ...ctx.query }
 
@@ -535,7 +546,7 @@ const fileUploadHandler = async (ctx, session) => {
     }
   }
 
-  const newCatalog = { ...catalog, [fileName]: newFileData }
+  const newCatalog = { ...catalog, [filename]: newFileData }
 
   // Delete file if fail to update catalog
   try {
@@ -567,12 +578,12 @@ const serveFileHandler = async (ctx) => {
 
 // fileUpdateHandler expects application/json
 const fileUpdateHandler = async (ctx, session) => {
-  const fileName = ctx.params.fileName
+  const filename = ctx.params.filename
   const fileData = ctx.body
 
   const { catalog, version } = await ctx.cacheStore.getCatalog()
 
-  const oldFileData = catalog[fileName]
+  const oldFileData = catalog[filename]
   if (detectIsUndefined(oldFileData)) {
     ctx.set.status = 400
     return 'File not found in catalog'
@@ -583,25 +594,25 @@ const fileUpdateHandler = async (ctx, session) => {
   const updatedOn = new Date()
   const newFileData = { ...fileData, createdOn, updatedOn }
 
-  const newCatalog = { ...catalog, [fileName]: newFileData }
+  const newCatalog = { ...catalog, [filename]: newFileData }
   await updateCatalog(newCatalog, version)
   return newCatalog
 }
 
 const fileDeleteHandler = async (ctx, session) => {
-  const fileName = ctx.params.fileName
+  const filename = ctx.params.filename
   const { catalog, version } = await ctx.cacheStore.getCatalog()
 
-  if (detectIsUndefined(catalog[fileName])) {
+  if (detectIsUndefined(catalog[filename])) {
     ctx.set.status = 400
     return 'File not found in catalog'
   }
 
   const newCatalog = { ...catalog }
-  delete newCatalog[fileName]
+  delete newCatalog[filename]
   await updateCatalog(newCatalog, version)
 
-  const file = Bun.file(`${publicDirectory}/${fileName}`)
+  const file = Bun.file(`${publicDirectory}/${filename}`)
   Bun.write(file, '')
 
   return newCatalog
@@ -637,7 +648,7 @@ export const euxenite = new Elysia()
   .put('/api/euxenite/auth', ctx => wrappedAdminUpdateHandler(ctx))
   .delete('/api/euxenite/auth', ctx => wrappedSessionEndHandler(ctx))
   .get('/api/euxenite/files', ctx => listHandler(ctx))
-  .post('/api/euxenite/files/:fileName', ctx => wrappedFileUploadHandler(ctx))
-  .put('/api/euxenite/files/:fileName', ctx => wrappedFileUpdateHandler(ctx))
-  .delete('/api/euxenite/files/:fileName', ctx => wrappedFileDeleteHandler(ctx))
-  .get('/_euxenite/:fileName', ctx => serveFileHandler(ctx)) // intercept with web server in production
+  .post('/api/euxenite/files/:filename', ctx => wrappedFileUploadHandler(ctx))
+  .put('/api/euxenite/files/:filename', ctx => wrappedFileUpdateHandler(ctx))
+  .delete('/api/euxenite/files/:filename', ctx => wrappedFileDeleteHandler(ctx))
+  .get('/_euxenite/:filename', ctx => serveFileHandler(ctx)) // intercept with web server in production
