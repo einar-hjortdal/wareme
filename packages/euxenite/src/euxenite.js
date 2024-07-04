@@ -522,10 +522,20 @@ const fileUploadHandler = async (ctx, session) => {
   await Bun.write(newFile, file)
   const { catalog, version } = await ctx.cacheStore.getCatalog()
 
-  const newCatalog = {
-    ...catalog,
-    [fileName]: { createdOn: new Date(), ...ctx.query }
+  const newFileData = { createdOn: new Date(), ...ctx.query }
+
+  // process query keys for initial data
+  const query = ctx.query
+  if (hasKeys(query)) {
+    const queryKeys = keys(query)
+    for (let i = 0, len = queryKeys.length; i < len; i++) {
+      const queryKey = queryKeys[i]
+      const queryValue = query[queryKey]
+      newFileData[queryKey] = queryValue
+    }
   }
+
+  const newCatalog = { ...catalog, [fileName]: newFileData }
 
   // Delete file if fail to update catalog
   try {
