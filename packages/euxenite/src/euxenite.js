@@ -6,7 +6,6 @@ import {
   keys,
   detectIsEmpty,
   detectIsNull,
-  detectIsString,
   detectIsArray,
   detectIsUndefined,
   hasKeys
@@ -381,7 +380,7 @@ const adminRetrieveHandler = async (ctx, session) => {
 }
 
 // loginHandler expects application/json
-const loginHandler = async (ctx) => {
+const adminLoginHandler = async (ctx) => {
   try {
     const { email, password } = ctx.body
     if (detectIsEmpty(email) || detectIsEmpty(password)) {
@@ -445,7 +444,7 @@ const adminUpdateHandler = async (ctx) => {
   return `Admin ${email} updated`
 }
 
-const sessionEndHandler = async (ctx, session) => {
+const adminLogoutHandler = async (ctx, session) => {
   await deleteSession(session)
   await cleanupExpiredSessions()
   return { success: 'Logged out' }
@@ -557,7 +556,8 @@ const fileUploadHandler = async (ctx, session) => {
     // allow withSession to handle error
     throw error
   }
-  return newCatalog
+
+  return { [filename]: newFileData }
 }
 
 const serveFileHandler = async (ctx) => {
@@ -596,7 +596,7 @@ const fileUpdateHandler = async (ctx, session) => {
 
   const newCatalog = { ...catalog, [filename]: newFileData }
   await updateCatalog(newCatalog, version)
-  return newCatalog
+  return newFileData
 }
 
 const fileDeleteHandler = async (ctx, session) => {
@@ -615,7 +615,10 @@ const fileDeleteHandler = async (ctx, session) => {
   const file = Bun.file(`${publicDirectory}/${filename}`)
   Bun.write(file, '')
 
-  return newCatalog
+  return {
+    filename,
+    deleted: true
+  }
 }
 
 /*
@@ -625,7 +628,7 @@ const fileDeleteHandler = async (ctx, session) => {
 */
 
 // Throw errors on startup if server is configured badly
-if (!detectIsString('string')) {
+if (detectIsUndefined(secret)) {
   throwError('EUXENITE_SECRET missing from process.env')
 }
 
@@ -635,7 +638,7 @@ const cacheStore = await createNewCacheStore()
 // workaround https://github.com/elysiajs/elysia/issues/688
 const wrappedAdminRetrieveHandler = ctx => withSession(ctx, adminRetrieveHandler)
 const wrappedAdminUpdateHandler = ctx => withSession(ctx, adminUpdateHandler)
-const wrappedSessionEndHandler = ctx => withSession(ctx, sessionEndHandler)
+const wrappedAdminLogoutHandler = ctx => withSession(ctx, adminLogoutHandler)
 const wrappedFileUploadHandler = ctx => withSession(ctx, fileUploadHandler)
 const wrappedFileUpdateHandler = ctx => withSession(ctx, fileUpdateHandler)
 const wrappedFileDeleteHandler = ctx => withSession(ctx, fileDeleteHandler)
@@ -644,11 +647,12 @@ const wrappedFileDeleteHandler = ctx => withSession(ctx, fileDeleteHandler)
 export const euxenite = new Elysia()
   .decorate('cacheStore', cacheStore)
   .get('/api/euxenite/auth', ctx => wrappedAdminRetrieveHandler(ctx))
-  .post('/api/euxenite/auth', ctx => loginHandler(ctx))
+  .post('/api/euxenite/auth', ctx => adminLoginHandler(ctx))
   .put('/api/euxenite/auth', ctx => wrappedAdminUpdateHandler(ctx))
-  .delete('/api/euxenite/auth', ctx => wrappedSessionEndHandler(ctx))
+  .delete('/api/euxenite/auth', ctx => wrappedAdminLogoutHandler(ctx))
   .get('/api/euxenite/files', ctx => listHandler(ctx))
   .post('/api/euxenite/files/:filename', ctx => wrappedFileUploadHandler(ctx))
   .put('/api/euxenite/files/:filename', ctx => wrappedFileUpdateHandler(ctx))
   .delete('/api/euxenite/files/:filename', ctx => wrappedFileDeleteHandler(ctx))
-  .get('/_euxenite/:filename', ctx => serveFileHandler(ctx)) // intercept with web server in production
+  // intercept with web server in production
+  .get('/_euxenite/:filename', ctx => serveFileHandler(ctx))
