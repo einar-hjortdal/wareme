@@ -10,6 +10,7 @@ import {
   detectIsUndefined,
   hasKeys
 } from '@dark-engine/core'
+import { nisha } from '@wareme/utils'
 
 const throwError = (errorMsg) => {
   throw new Error(formatErrorMsg(errorMsg, lib))
@@ -299,11 +300,103 @@ export const loadSession = async (cookie) => {
   return sessionData
 }
 
+/*
+|
+| cache
+|
+*/
+
+export const includesString = (aString, arrayOfStrings) => {
+  for (let i = 0, len = arrayOfStrings.length; i < len; i++) {
+    const currentString = arrayOfStrings[i]
+    if (currentString === aString) {
+      return true
+    }
+  }
+  return false
+}
+
+export const sortStrings = (arrayOfStrings) => {
+  const len = arrayOfStrings.length
+  // Arrays of 0 and 1 elements are already sorted
+  if (len < 2) {
+    return arrayOfStrings
+  }
+
+  const pivot = arrayOfStrings[Math.floor((len - 1) / 2)]
+  const lesser = []
+  const equal = []
+  const greater = []
+
+  for (let i = 0; i < len; i++) {
+    if (arrayOfStrings[i] > pivot) {
+      greater.push(arrayOfStrings[i])
+    } else if (arrayOfStrings[i] === pivot) {
+      equal.push(arrayOfStrings[i])
+    } else {
+      lesser.push(arrayOfStrings[i])
+    }
+  }
+
+  return [...sortStrings(lesser), ...equal, ...sortStrings(greater)]
+}
+
+const sortQueryKeysAndValues = (query) => {
+  const unsortedQueryKeys = keys(query)
+  const sortedQueryKeys = sortStrings(unsortedQueryKeys)
+  const sortedQueryValues = []
+  for (let i = 0, len = sortedQueryKeys.length; i < len; i++) {
+    const currentQueryKey = sortedQueryKeys[i]
+    const currentQueryValue = query[currentQueryKey]
+    sortedQueryValues.push(currentQueryValue)
+  }
+  return { sortedQueryKeys, sortedQueryValues }
+}
+
+const paginationQueryKeys = ['order', 'limit', 'offset']
+
+const filterCatalog = (catalogData, qKeys, qValues) => {
+  const result = { ...catalogData }
+  const files = keys(catalogData)
+  const firstKey = qKeys[0]
+  const firstValue = qValues[0]
+
+  const firstKeyIsFilter = !includesString(firstKey, paginationQueryKeys)
+  if (firstKeyIsFilter) {
+    for (let i = 0, len = files.length; i < len; i++) {
+      const fileKey = files[i]
+      const file = result[fileKey]
+      const filteredProperty = file[firstKey]
+      if (detectIsUndefined(filteredProperty) || filteredProperty !== firstValue) {
+        delete result[fileKey]
+      }
+    }
+  }
+
+  if (qKeys.length === 1) {
+    return result
+  }
+
+  const newQKeys = qKeys.slice(1)
+  const newQValues = qValues.slice(1)
+  return filterCatalog(result, newQKeys, newQValues)
+}
+
+const createCacheKey = (sortedKeys, sortedValues) => {
+  const res = []
+  for (let i = 0, len = sortedKeys.length; i < len; i++) {
+    const k = sortedKeys[i]
+    const v = sortedValues[i]
+    res.push(k)
+    res.push(v)
+  }
+  return res.join('')
+}
+
 // Always use a CacheStore instance to retrieve catalog data and version.
-// Send the catalog data and version togeter to the browser.
-// Always expect the browser to send a version back.
 class CacheStore {
   cachedCatalog
+  cachedFilteredCatalog
   cachedCatalogVersion
   cachedAdmin
   cachedAdminVersion
@@ -311,6 +404,7 @@ class CacheStore {
   constructor (catalog, catalogVersion, admin, adminVersion) {
     this.cachedCatalog = catalog
     this.cachedCatalogVersion = catalogVersion
+    this.cachedFilteredCatalog = {}
     this.cachedAdmin = admin
     this.cachedAdminVersion = adminVersion
   }
@@ -324,7 +418,26 @@ class CacheStore {
     const currentCatalog = await loadCatalog()
     this.cachedCatalog = currentCatalog
     this.cachedCatalogVersion = currentCatalogVersion
+    this.cachedFilteredCatalog = {}
     return { catalog: this.cachedCatalog, version: this.cachedCatalogVersion }
+  }
+
+  getFilteredCatalog = async (query) => {
+    const { catalog } = await this.getCatalog()
+    if (detectIsNull(catalog)) {
+      return { catalog: {}, version: this.cachedCatalogVersion }
+    }
+
+    const { sortedQueryKeys, sortedQueryValues } = sortQueryKeysAndValues(query)
+    const cacheKey = createCacheKey(sortedQueryKeys, sortedQueryValues)
+    const cachedResult = this.cachedFilteredCatalog[cacheKey]
+    if (detectIsUndefined(cachedResult)) {
+      const filteredCatalog = filterCatalog(catalog, sortedQueryKeys, sortedQueryValues)
+      this.cachedFilteredCatalog[cacheKey] = filteredCatalog
+      return { catalog: filteredCatalog, version: this.cachedCatalogVersion }
+    }
+
+    return { catalog: cachedResult, version: this.cachedCatalogVersion }
   }
 
   getAdmin = async () => {
@@ -349,7 +462,82 @@ const createNewCacheStore = async () => {
   return new CacheStore(catalog, catalogVersion, admin, adminVersion)
 }
 
-// withSession is a higher order function that provides a session object to the handler.
+/*
+|
+| catalog manipulation
+|
+*/
+
+// arrayFromObject transforms {[filename]: {...}} to [{name: filename, ...}]
+export const arrayFromObject = (o) => {
+  const objectKeys = keys(o)
+  const res = []
+  for (let i = 0, len = objectKeys.length; i < len; i++) {
+    const key = objectKeys[i]
+    const item = o[key]
+    res.push({ ...item, name: key })
+  }
+  return res
+}
+
+// sortArrayOfFiles can be used to sort an array generated with arrayFromObject
+// it should be used to sort by string or number.
+// inverse defaults to false: from smaller to larger (ascending)
+export const sortArrayOfFiles = (arrayOfFiles, propertyToSortBy, inverse) => {
+  const len = arrayOfFiles.length
+  // Arrays of 0 and 1 elements are already sorted
+  if (len < 2) {
+    return arrayOfFiles
+  }
+
+  const pivot = arrayOfFiles[Math.floor((len - 1) / 2)][propertyToSortBy]
+  const older = [] // or smaller
+  const equal = []
+  const newer = [] // or larger
+
+  for (let i = 0; i < len; i++) {
+    if (arrayOfFiles[i][propertyToSortBy] > pivot) {
+      newer.push(arrayOfFiles[i])
+    } else if (arrayOfFiles[i][propertyToSortBy] === pivot) {
+      equal.push(arrayOfFiles[i])
+    } else {
+      older.push(arrayOfFiles[i])
+    }
+  }
+
+  if (inverse) {
+    return [
+      ...sortArrayOfFiles(older, propertyToSortBy, inverse),
+      ...equal,
+      ...sortArrayOfFiles(newer, propertyToSortBy, inverse)
+    ]
+  }
+  return [
+    ...sortArrayOfFiles(newer, propertyToSortBy, inverse),
+    ...equal,
+    ...sortArrayOfFiles(older, propertyToSortBy, inverse)
+  ]
+}
+
+const sortCatalogByOrderQuery = (catalog, order) => {
+  const catalogArray = arrayFromObject(catalog)
+
+  if (order === 'createdAt-des') {
+    return sortArrayOfFiles(catalogArray, 'createdAt')
+  }
+  // assume createdAt-des in any other case
+  return sortArrayOfFiles(catalogArray, 'createdAt', true)
+}
+
+/*
+|
+| handlers
+|
+*/
+
+// withSession is a higher order handler function that
+// - rejects unauthorized requests before they reach the wrapped handler
+// - provides a session object to the wrapped handler
 const withSession = async (ctx, handler) => {
   try {
     const session = await loadSession(ctx.cookie)
@@ -366,12 +554,6 @@ const withSession = async (ctx, handler) => {
     return 'Internal server error'
   }
 }
-
-/*
-|
-| handlers
-|
-*/
 
 const adminRetrieveHandler = async (ctx, session) => {
   const { admin } = await ctx.cacheStore.getAdmin()
@@ -451,50 +633,31 @@ const adminLogoutHandler = async (ctx, session) => {
 }
 
 // listHandler should be accessible to anybody
-const listHandler = async (ctx, session) => {
-  const { catalog } = await ctx.cacheStore.getCatalog()
-  if (detectIsNull(catalog)) {
-    return {}
-  }
-
+// the order param specifies the property to use to order the results.
+// By default it sorts according to the createdAt property, newest first (descending)
+// It is possible to sort by:
+// createdAt-des (createdAt, descending)
+// createdAt-asc (createdAt, ascending)
+// Other sorting options can be handled on the browser.
+const listHandler = async (ctx) => {
   const query = ctx.query
-  if (!hasKeys(query)) {
-    return catalog
+  const { catalog } = await ctx.cacheStore.getFilteredCatalog(query)
+  if (!hasKeys(catalog)) {
+    return []
   }
 
-  const queryKeys = keys(query)
-  const queryValues = []
-  for (let i = 0, len = queryKeys.length; i < len; i++) {
-    const queryKey = queryKeys[i]
-    const queryValue = query[queryKey]
-    queryValues.push(queryValue)
+  // defaults
+  const order = query.order
+  const limit = nisha(detectIsUndefined(query.limit), 50, Number(query.limit))
+  const offset = nisha(detectIsUndefined(query.offset), 0, Number(query.limit))
+
+  const sortedCatalog = sortCatalogByOrderQuery(catalog, order)
+
+  const endIndex = Math.min(offset + limit, sortedCatalog.length)
+  if (sortedCatalog.length < offset) {
+    return sortedCatalog
   }
-
-  const filterCatalog = (catalogData, qKeys, qValues) => {
-    const result = { ...catalogData }
-    const files = keys(catalogData)
-    const iKey = qKeys[0]
-    const iValue = qValues[0]
-    for (let i = 0, len = files.length; i < len; i++) {
-      const fileKey = files[i]
-      const file = result[fileKey]
-      const filteredProperty = file[iKey]
-      if (detectIsUndefined(filteredProperty) || filteredProperty !== iValue) {
-        delete result[fileKey]
-      }
-    }
-
-    if (qKeys.length === 1) {
-      return result
-    }
-
-    const newQKeys = qKeys.slice(1)
-    const newQValues = qValues.slice(1)
-    return filterCatalog(result, newQKeys, newQValues)
-  }
-
-  const filteredCatalog = filterCatalog(catalog, queryKeys, queryValues)
-  return filteredCatalog
+  return sortedCatalog.slice(offset, endIndex)
 }
 
 // fileUploadHandler expects multipart/form-data
