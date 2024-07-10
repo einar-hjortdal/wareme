@@ -341,6 +341,7 @@ export const sortStrings = (arrayOfStrings) => {
   return [...sortStrings(lesser), ...equal, ...sortStrings(greater)]
 }
 
+// TODO sorting keys isn't really necessary any more because we don't cache results any more
 const sortQueryKeysAndValues = (query) => {
   const unsortedQueryKeys = keys(query)
   const sortedQueryKeys = sortStrings(unsortedQueryKeys)
@@ -358,16 +359,16 @@ const paginationQueryKeys = ['order', 'limit', 'offset']
 const filterCatalog = (catalogData, qKeys, qValues) => {
   const result = { ...catalogData }
   const files = keys(catalogData)
-  const firstKey = qKeys[0]
-  const firstValue = qValues[0]
+  const firstQueryKey = qKeys[0]
+  const firstQueryValue = qValues[0]
 
-  const firstKeyIsFilter = !includesString(firstKey, paginationQueryKeys)
+  const firstKeyIsFilter = !includesString(firstQueryKey, paginationQueryKeys)
   if (firstKeyIsFilter) {
     for (let i = 0, len = files.length; i < len; i++) {
       const fileKey = files[i]
       const file = result[fileKey]
-      const filteredProperty = file[firstKey]
-      if (detectIsUndefined(filteredProperty) || filteredProperty !== firstValue) {
+      const filteredProperty = file[firstQueryKey]
+      if (detectIsUndefined(filteredProperty) || filteredProperty !== firstQueryValue) {
         delete result[fileKey]
       }
     }
@@ -382,21 +383,9 @@ const filterCatalog = (catalogData, qKeys, qValues) => {
   return filterCatalog(result, newQKeys, newQValues)
 }
 
-const createCacheKey = (sortedKeys, sortedValues) => {
-  const res = []
-  for (let i = 0, len = sortedKeys.length; i < len; i++) {
-    const k = sortedKeys[i]
-    const v = sortedValues[i]
-    res.push(k)
-    res.push(v)
-  }
-  return res.join('')
-}
-
 // Always use a CacheStore instance to retrieve catalog data and version.
 class CacheStore {
   cachedCatalog
-  cachedFilteredCatalog
   cachedCatalogVersion
   cachedAdmin
   cachedAdminVersion
@@ -404,7 +393,6 @@ class CacheStore {
   constructor (catalog, catalogVersion, admin, adminVersion) {
     this.cachedCatalog = catalog
     this.cachedCatalogVersion = catalogVersion
-    this.cachedFilteredCatalog = {}
     this.cachedAdmin = admin
     this.cachedAdminVersion = adminVersion
   }
@@ -429,15 +417,8 @@ class CacheStore {
     }
 
     const { sortedQueryKeys, sortedQueryValues } = sortQueryKeysAndValues(query)
-    const cacheKey = createCacheKey(sortedQueryKeys, sortedQueryValues)
-    const cachedResult = this.cachedFilteredCatalog[cacheKey]
-    if (detectIsUndefined(cachedResult)) {
-      const filteredCatalog = filterCatalog(catalog, sortedQueryKeys, sortedQueryValues)
-      this.cachedFilteredCatalog[cacheKey] = filteredCatalog
-      return { catalog: filteredCatalog, version: this.cachedCatalogVersion }
-    }
-
-    return { catalog: cachedResult, version: this.cachedCatalogVersion }
+    const filteredCatalog = filterCatalog(catalog, sortedQueryKeys, sortedQueryValues)
+    return { catalog: filteredCatalog, version: this.cachedCatalogVersion }
   }
 
   getAdmin = async () => {
@@ -468,14 +449,14 @@ const createNewCacheStore = async () => {
 |
 */
 
-// arrayFromObject transforms {[filename]: {...}} to [{name: filename, ...}]
+// arrayFromObject transforms {[id]: {...}} to [{id: id, ...}]
 export const arrayFromObject = (o) => {
   const objectKeys = keys(o)
   const res = []
   for (let i = 0, len = objectKeys.length; i < len; i++) {
     const key = objectKeys[i]
     const item = o[key]
-    res.push({ ...item, name: key })
+    res.push({ ...item, id: key })
   }
   return res
 }
@@ -522,11 +503,11 @@ export const sortArrayOfFiles = (arrayOfFiles, propertyToSortBy, inverse) => {
 const sortCatalogByOrderQuery = (catalog, order) => {
   const catalogArray = arrayFromObject(catalog)
 
-  if (order === 'createdAt-des') {
-    return sortArrayOfFiles(catalogArray, 'createdAt')
+  if (order === 'createdOn') {
+    return sortArrayOfFiles(catalogArray, 'createdOn', true)
   }
-  // assume createdAt-des in any other case
-  return sortArrayOfFiles(catalogArray, 'createdAt', true)
+
+  return sortArrayOfFiles(catalogArray, 'createdOn')
 }
 
 /*
@@ -632,18 +613,30 @@ const adminLogoutHandler = async (ctx, session) => {
   return { success: 'Logged out' }
 }
 
-// listHandler should be accessible to anybody
+// fileListHandler should be accessible to anybody
 // the order param specifies the property to use to order the results.
 // By default it sorts according to the createdAt property, newest first (descending)
 // It is possible to sort by:
 // createdAt-des (createdAt, descending)
 // createdAt-asc (createdAt, ascending)
 // Other sorting options can be handled on the browser.
-const listHandler = async (ctx) => {
+const fileListHandler = async (ctx) => {
   const query = ctx.query
   const { catalog } = await ctx.cacheStore.getFilteredCatalog(query)
   if (!hasKeys(catalog)) {
     return []
+  }
+
+  // Shortcut for ID: if id is in query, immediately return file data
+  const id = query.id
+  if (!detectIsUndefined(id)) {
+    const productById = catalog[id]
+    if (detectIsUndefined(productById)) {
+      ctx.set.status = 404
+      return 'File not found'
+    }
+
+    return productById
   }
 
   // defaults
@@ -680,22 +673,33 @@ const fileUploadHandler = async (ctx, session) => {
     return 'Can only process one file at once'
   }
 
+  const today = new Date()
+  const year = today.getFullYear()
+  // Adding 1 to get the correct month number and padStart for leading zero
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const partialPath = `/${year}/${month}/${filename}`
+  const path = `/_${lib}${partialPath}`
+
   const { catalog, version } = await ctx.cacheStore.getCatalog()
   if (!detectIsNull(catalog)) {
     const catalogKeys = keys(catalog)
     for (let i = 0, len = catalogKeys.length; i < len; i++) {
       const catalogFile = catalogKeys[i]
-      if (catalogFile === filename) {
+      if (catalogFile.path === path) {
         ctx.set.status = 409
         return 'File already exists'
       }
     }
   }
 
-  const newFile = Bun.file(`${publicDirectory}/${filename}`)
+  const newFile = Bun.file(`${publicDirectory}${partialPath}`)
   await Bun.write(newFile, file)
 
-  const newFileData = { createdOn: new Date(), ...ctx.query }
+  const newFileData = {
+    path,
+    createdOn: new Date(),
+    ...ctx.query
+  }
 
   // process query keys for initial data
   const query = ctx.query
@@ -708,19 +712,12 @@ const fileUploadHandler = async (ctx, session) => {
     }
   }
 
-  const newCatalog = { ...catalog, [filename]: newFileData }
+  const newFileId = crypto.randomUUID()
+  const newCatalog = { ...catalog, [newFileId]: newFileData }
 
-  // Delete file if fail to update catalog
-  try {
-    await updateCatalog(newCatalog, version)
-  } catch (error) {
-    Bun.write(newFile, '')
+  await updateCatalog(newCatalog, version)
 
-    // allow withSession to handle error
-    throw error
-  }
-
-  return { [filename]: newFileData }
+  return { [newFileId]: newFileData }
 }
 
 const serveFileHandler = async (ctx) => {
@@ -741,45 +738,43 @@ const serveFileHandler = async (ctx) => {
 
 // fileUpdateHandler expects application/json
 const fileUpdateHandler = async (ctx, session) => {
-  const filename = ctx.params.filename
+  const id = ctx.params.id
   const fileData = ctx.body
 
   const { catalog, version } = await ctx.cacheStore.getCatalog()
 
-  const oldFileData = catalog[filename]
+  const oldFileData = catalog[id]
   if (detectIsUndefined(oldFileData)) {
     ctx.set.status = 400
     return 'File not found in catalog'
   }
 
-  // Do not allow changes to createdOn
+  // Do not allow changes to createdOn, path
+  const path = oldFileData.path
   const createdOn = oldFileData.createdOn
   const updatedOn = new Date()
-  const newFileData = { ...fileData, createdOn, updatedOn }
+  const newFileData = { ...fileData, path, createdOn, updatedOn }
 
-  const newCatalog = { ...catalog, [filename]: newFileData }
+  const newCatalog = { ...catalog, [id]: newFileData }
   await updateCatalog(newCatalog, version)
-  return newFileData
+  return { [id]: newFileData }
 }
 
 const fileDeleteHandler = async (ctx, session) => {
-  const filename = ctx.params.filename
+  const id = ctx.params.id
   const { catalog, version } = await ctx.cacheStore.getCatalog()
 
-  if (detectIsUndefined(catalog[filename])) {
+  if (detectIsUndefined(catalog[id])) {
     ctx.set.status = 400
     return 'File not found in catalog'
   }
 
   const newCatalog = { ...catalog }
-  delete newCatalog[filename]
+  delete newCatalog[id]
   await updateCatalog(newCatalog, version)
 
-  const file = Bun.file(`${publicDirectory}/${filename}`)
-  Bun.write(file, '')
-
   return {
-    filename,
+    id,
     deleted: true
   }
 }
@@ -813,9 +808,9 @@ export const euxenite = new Elysia()
   .post('/api/euxenite/auth', ctx => adminLoginHandler(ctx))
   .put('/api/euxenite/auth', ctx => wrappedAdminUpdateHandler(ctx))
   .delete('/api/euxenite/auth', ctx => wrappedAdminLogoutHandler(ctx))
-  .get('/api/euxenite/files', ctx => listHandler(ctx))
+  .get('/api/euxenite/files', ctx => fileListHandler(ctx))
   .post('/api/euxenite/files/:filename', ctx => wrappedFileUploadHandler(ctx))
-  .put('/api/euxenite/files/:filename', ctx => wrappedFileUpdateHandler(ctx))
-  .delete('/api/euxenite/files/:filename', ctx => wrappedFileDeleteHandler(ctx))
+  .put('/api/euxenite/files/:id', ctx => wrappedFileUpdateHandler(ctx))
+  .delete('/api/euxenite/files/:id', ctx => wrappedFileDeleteHandler(ctx))
   // intercept with web server in production
-  .get('/_euxenite/:filename', ctx => serveFileHandler(ctx))
+  .get('/_euxenite/*', ctx => serveFileHandler(ctx))

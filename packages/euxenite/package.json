@@ -1,7 +1,7 @@
 {
   "name": "@wareme/euxenite",
   "description": "Store and manage BLOBs for Dark applications",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "keywords": [
     "utils",
     "Dark",
