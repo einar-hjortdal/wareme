@@ -7,6 +7,7 @@ const runCommand = async (command, id) => {
 export const luuid_v2 = () => runCommand('v2')
 export const luuid_parse = (id) => runCommand('parse', id)
 export const luuid_add_hyphens = (id) => runCommand('add_hyphens', id)
+export const luuid_remove_hyphens = (id) => runCommand('remove_hyphens', id)
 
 export class Luuid {
   process

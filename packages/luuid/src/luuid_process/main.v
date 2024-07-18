@@ -24,6 +24,12 @@ fn handle_args(args []string) !string {
 			res := luuid.add_hyphens(id)!
 			return res
 		}
+
+		if arg.starts_with('--remove_hyphens=') {
+			id := arg['--remove_hyphens='.len..]
+			res := luuid.remove_hyphens(id)
+			return res
+		}
 	}
 
 	return error('invalid args')
