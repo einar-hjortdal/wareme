@@ -1,7 +1,8 @@
 const runCommand = async (command, id) => {
   const process = Bun.spawn(['bin/luuid_process', `--${command}=${id}`])
-  const text = (await new Response(process.stdout).text()).trim()
-  return text
+  const response = await new Response(process.stdout).text()
+  const res = response.slice(0, -1) // remove final \n character
+  return res
 }
 
 export const luuid_v2 = () => runCommand('v2')
@@ -33,8 +34,9 @@ export class Luuid {
     const { stdin } = this.process
     stdin.write(command)
     const value = await this.readResponse()
-    const res = this.textDecoder.decode(value).trim()
-    return res
+    const response = this.textDecoder.decode(value)
+    const result = response.slice(0, -1) // remove final \n character
+    return result
   }
 
   v1 = async () => {
