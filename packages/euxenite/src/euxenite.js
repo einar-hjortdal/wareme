@@ -686,6 +686,7 @@ const fileUploadHandler = async (ctx, session) => {
     for (let i = 0, len = catalogKeys.length; i < len; i++) {
       const catalogFile = catalogKeys[i]
       if (catalogFile.path === path) {
+        // TODO add counter at end of file name instead.
         ctx.set.status = 409
         return 'File already exists'
       }

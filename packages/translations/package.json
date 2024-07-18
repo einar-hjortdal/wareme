@@ -1,7 +1,7 @@
 {
   "name": "@wareme/translations",
   "description": "Translate Dark applications",
-  "version": "3.10.0",
+  "version": "3.10.1",
   "keywords": [
     "i18n",
     "l10n",
@@ -31,6 +31,6 @@
   },
   "peerDependencies": {
     "@dark-engine/core": "^1.4.1",
-    "@wareme/event-emitter": "workspace:*"
+    "@wareme/event-emitter": "^3.1.0"
   }
 }

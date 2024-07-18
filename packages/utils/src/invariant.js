@@ -1,8 +1,6 @@
-import { formatErrorMsg } from '@dark-engine/core'
+import { illegal } from '@dark-engine/core'
 
-const throwError = (errorMsg) => {
-  throw new Error(formatErrorMsg(errorMsg, 'invariant'))
-}
+const throwError = (errorMsg) => illegal(errorMsg, 'invariant')
 
 export function invariant (condition, errorMsg) {
   if (condition) {

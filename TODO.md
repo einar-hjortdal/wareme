@@ -1,0 +1,2 @@
+- allanite: framework/starter for SEO-optimized multilanguage apps
+- covellite: framework/starter without SEO

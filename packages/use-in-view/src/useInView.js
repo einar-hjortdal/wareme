@@ -2,14 +2,14 @@ import {
   useState,
   useRef,
   useEffect,
-  detectIsUndefined,
+  detectIsEmpty,
   detectIsFalsy,
   detectIsArray
 } from '@dark-engine/core'
 
 import { observe } from './observe'
 
-function alwaysString (stringOrArray) {
+const alwaysString = (stringOrArray) => {
   if (detectIsArray(stringOrArray)) {
     return stringOrArray.toString()
   }
@@ -17,7 +17,7 @@ function alwaysString (stringOrArray) {
 }
 
 export function useInView (options) {
-  if (detectIsUndefined(options)) {
+  if (detectIsEmpty(options)) {
     options = {}
   }
 
