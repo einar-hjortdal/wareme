@@ -1,5 +1,7 @@
+const luuid_process_path = `${import.meta.dirname}/luuid_bin`
+
 const runCommand = async (command, id) => {
-  const process = Bun.spawn(['bin/luuid_process', `--${command}=${id}`])
+  const process = Bun.spawn([luuid_process_path, `--${command}=${id}`])
   const response = await new Response(process.stdout).text()
   const res = response.slice(0, -1) // remove final \n character
   return res
@@ -10,12 +12,12 @@ export const luuid_parse = (id) => runCommand('parse', id)
 export const luuid_add_hyphens = (id) => runCommand('add_hyphens', id)
 export const luuid_remove_hyphens = (id) => runCommand('remove_hyphens', id)
 
-export class Luuid {
+export class LuuidGenerator {
   process
   textDecoder
 
   constructor () {
-    this.process = Bun.spawn(['bin/luuid_process'], {
+    this.process = Bun.spawn([luuid_process_path], {
       stdin: 'pipe',
     })
     this.textDecoder = new TextDecoder("utf-8")

@@ -3,8 +3,13 @@
   "description": "lexicographically sortable UUID implementation",
   "version": "3.0.0",
   "keywords": [
-    "UUID",
     "luuid"
+  ],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
   ],
   "author": "Coachonko",
   "repository": "https://github.com/Coachonko/wareme",
@@ -13,9 +18,10 @@
   "scripts": {
     "test": "bun test",
     "clean": "rm -rf ./dist",
-    "build:luuid_process": "v src/luuid_process -o bin/luuid_process",
+    "build:luuid_wrapper": "v src/luuid_wrapper -o src/luuid_bin",
     "build:luuid": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external",
-    "build": "bun run build:luuid_process && bun run build:luuid",
+    "build:copy_bin": "cp src/luuid_bin dist/",
+    "build": "bun run build:luuid_wrapper && bun run build:luuid && bun run build:copy_bin",
     "dev": "bun run build:luuid --watch"
   },
   "devDependencies": {
