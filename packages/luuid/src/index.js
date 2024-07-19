@@ -1,7 +1,7 @@
 export {
   LuuidGenerator,
-  luuid_add_hyphens,
-  luuid_remove_hyphens,
-  luuid_v2,
-  luuid_parse
+  luuidAddHyphens,
+  luuidRemoveHyphens,
+  luuidV2,
+  luuidParse
 } from './luuid'

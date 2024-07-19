@@ -1,7 +1,7 @@
 {
   "name": "@wareme/luuid",
   "description": "lexicographically sortable UUID implementation",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "keywords": [
     "luuid"
   ],
@@ -14,13 +14,13 @@
   "author": "Coachonko",
   "repository": "https://github.com/Coachonko/wareme",
   "license": "NCSA",
-  "main": "dist/index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "bun test",
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf ./build",
     "build:luuid_wrapper": "v src/luuid_wrapper -o src/luuid_bin",
-    "build:luuid": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external",
-    "build:copy_bin": "cp src/luuid_bin dist/",
+    "build:luuid": "bun run clean && bun build ./src/index.js --outdir ./build --minify --sourcemap=external",
+    "build:copy_bin": "cp src/luuid_bin build/",
     "build": "bun run build:luuid_wrapper && bun run build:luuid && bun run build:copy_bin",
     "dev": "bun run build:luuid --watch"
   },

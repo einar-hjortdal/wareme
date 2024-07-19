@@ -1,6 +1,12 @@
 import { test, describe, expect } from 'bun:test'
 
-import { LuuidGenerator, luuid_remove_hyphens, luuid_add_hyphens, luuid_parse, luuid_v2 } from './luuid'
+import {
+  LuuidGenerator,
+  luuidV2,
+  luuidParse,
+  luuidAddHyphens,
+  luuidRemoveHyphens
+} from './luuid'
 
 describe('v1', () => {
   const luuid = new LuuidGenerator()
@@ -29,7 +35,7 @@ describe('v1', () => {
 
 describe('v2', () => {
   test('Should return a luuid v2', async () => {
-    const id = await luuid_v2()
+    const id = await luuidV2()
     expect(id).toBeString()
   })
 })
@@ -38,7 +44,7 @@ describe('parse', () => {
   test('Should parse a luuid v1', async () => {
     const luuid = new LuuidGenerator()
     const id = await luuid.v1()
-    const parsed = JSON.parse(await luuid_parse(id))
+    const parsed = JSON.parse(await luuidParse(id))
     expect(parsed.timestamp).toBeDefined()
     expect(parsed.version).toBeDefined()
   })
@@ -49,7 +55,7 @@ describe('remove_hyphens', () => {
     const luuid = new LuuidGenerator()
     const id = await luuid.v1()
     const without_hyphens = id.replaceAll('-', '')
-    const processed = await luuid_remove_hyphens(id)
+    const processed = await luuidRemoveHyphens(id)
     expect(processed).toEqual(without_hyphens)
   })
 })
@@ -58,8 +64,8 @@ describe('add_hyphens', () => {
   test('Should add_hyphens to a luuid v1', async () => {
     const luuid = new LuuidGenerator()
     const id = await luuid.v1()
-    const without_hyphens = await luuid_remove_hyphens(id)
-    const with_hyphens = await luuid_add_hyphens(without_hyphens)
+    const without_hyphens = await luuidRemoveHyphens(id)
+    const with_hyphens = await luuidAddHyphens(without_hyphens)
     expect(with_hyphens).toEqual(id)
   })
 })

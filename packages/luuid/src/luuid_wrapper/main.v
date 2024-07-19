@@ -19,14 +19,14 @@ fn handle_args(args []string) !string {
 			return json.encode(parsed)
 		}
 
-		if arg.starts_with('--add_hyphens=') {
-			id := arg['--add_hyphens='.len..]
+		if arg.starts_with('--add-hyphens=') {
+			id := arg['--add-hyphens='.len..]
 			res := luuid.add_hyphens(id)!
 			return res
 		}
 
-		if arg.starts_with('--remove_hyphens=') {
-			id := arg['--remove_hyphens='.len..]
+		if arg.starts_with('--remove-hyphens=') {
+			id := arg['--remove-hyphens='.len..]
 			res := luuid.remove_hyphens(id)
 			return res
 		}
