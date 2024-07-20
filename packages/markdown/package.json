@@ -1,0 +1,30 @@
+{
+  "name": "@wareme/markdown",
+  "description": "Parse markdown",
+  "version": "3.0.0",
+  "keywords": [
+    "markdown"
+  ],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "author": "Coachonko",
+  "repository": "https://github.com/Coachonko/wareme",
+  "license": "NCSA",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "bun test",
+    "clean": "rm -rf ./build",
+    "build:markdown_wrapper": "v src/markdown_wrapper -o src/markdown_bin",
+    "build:luuid": "bun run clean && bun build ./src/index.js --outdir ./build --minify --sourcemap=external",
+    "build:copy_bin": "cp src/markdown_bin build/",
+    "build": "bun run build:markdown_wrapper && bun run build:luuid && bun run build:copy_bin",
+    "dev": "bun run build:luuid --watch"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
+  }
+}
