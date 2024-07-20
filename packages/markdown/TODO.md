@@ -1,0 +1,1 @@
+- parseTo should not add a file extension to the desired output path
