@@ -1,1 +1,1 @@
-export { parse } from "./markdown";
+export { parse, parseTo } from "./markdown";

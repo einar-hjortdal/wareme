@@ -18,4 +18,5 @@ const runCommand = async (inputPath, command) => {
   return res
 }
 
-export const parse = (inputPath, command) => runCommand(inputPath, command)
+export const parse = (inputPath) => runCommand(inputPath)
+export const parseTo = (inputPath, outputPath) => runCommand(inputPath, `--out=${outputPath}`)

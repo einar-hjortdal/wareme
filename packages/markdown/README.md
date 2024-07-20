@@ -6,6 +6,4 @@ The binary is built for Linux x64.
 
 ## Usage
 
-```js
-// TODO
-```
+Please refer to [the test file](./src/markdown_test.js)
