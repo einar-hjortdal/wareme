@@ -6,8 +6,9 @@ import {
   useMemo,
   detectIsEmpty,
   detectIsString,
-  detectIsNumber
-} from '@dark-engine/core';
+  detectIsNumber,
+  detectIsUndefined
+} from '@dark-engine/core'
 import {
   throwError,
   isNumber,
@@ -17,10 +18,10 @@ import {
   getLocaleConfig,
   padTrimValue,
   getSuffix,
-  repositionCursor,
-} from './utils';
+  repositionCursor
+} from './utils'
 
-export const CurrencyInput = component(({
+const CurrencyInput = component(({
   allowDecimals = true,
   allowNegativeValue = true,
   id,
@@ -35,7 +36,7 @@ export const CurrencyInput = component(({
   onValueChange,
   fixedDecimalLength,
   placeholder,
-  decimalScale,
+  decimalScale/*: number  */,
   prefix,
   suffix,
   intlConfig,
@@ -56,16 +57,16 @@ export const CurrencyInput = component(({
   ...props
 }) => {
   if (_decimalSeparator && isNumber(_decimalSeparator)) {
-    throwError('decimalSeparator cannot be a number');
+    throwError('decimalSeparator cannot be a number')
   }
 
   if (_groupSeparator && isNumber(_groupSeparator)) {
-    throwError('groupSeparator cannot be a number');
+    throwError('groupSeparator cannot be a number')
   }
 
-  const localeConfig = useMemo(() => getLocaleConfig(intlConfig), [intlConfig]);
-  const decimalSeparator = _decimalSeparator || localeConfig.decimalSeparator || '';
-  const groupSeparator = _groupSeparator || localeConfig.groupSeparator || '';
+  const localeConfig = useMemo(() => getLocaleConfig(intlConfig), [intlConfig])
+  const decimalSeparator = _decimalSeparator || localeConfig.decimalSeparator || ''
+  const groupSeparator = _groupSeparator || localeConfig.groupSeparator || ''
 
   if (
     decimalSeparator &&
@@ -73,7 +74,7 @@ export const CurrencyInput = component(({
     decimalSeparator === groupSeparator &&
     disableGroupSeparators === false
   ) {
-    throwError('decimalSeparator cannot be the same as groupSeparator');
+    throwError('decimalSeparator cannot be the same as groupSeparator')
   }
 
   const formatValueOptions = {
@@ -82,8 +83,8 @@ export const CurrencyInput = component(({
     disableGroupSeparators,
     intlConfig,
     prefix: prefix || localeConfig.prefix,
-    suffix: suffix,
-  };
+    suffix
+  }
 
   const cleanValueOptions = {
     decimalSeparator,
@@ -93,8 +94,8 @@ export const CurrencyInput = component(({
     allowNegativeValue,
     disableAbbreviations,
     prefix: prefix || localeConfig.prefix,
-    transformRawValue,
-  };
+    transformRawValue
+  }
 
   const getInitialStateValue = () => {
     if (detectIsString(defaultValue)) {
@@ -106,36 +107,36 @@ export const CurrencyInput = component(({
     return ''
   }
 
-  const [stateValue, setStateValue] = useState(getInitialStateValue());
-  const [dirty, setDirty] = useState(false);
-  const [cursor, setCursor] = useState(0);
-  const [changeCount, setChangeCount] = useState(0);
-  const [lastKeyStroke, setLastKeyStroke] = useState(null);
-  const inputRef = useRef(null);
+  const [stateValue, setStateValue] = useState(getInitialStateValue())
+  const [dirty, setDirty] = useState(false)
+  const [cursor, setCursor] = useState(0)
+  const [changeCount, setChangeCount] = useState(0)
+  const [lastKeyStroke, setLastKeyStroke] = useState(null)
+  const inputRef = useRef(null)
 
   const processChange = (value, selectionStart) => {
-    setDirty(true);
+    setDirty(true)
 
     const { modifiedValue, cursorPosition } = repositionCursor({
       selectionStart,
       value,
       lastKeyStroke,
       stateValue,
-      groupSeparator,
-    });
+      groupSeparator
+    })
 
-    const stringValue = cleanValue({ value: modifiedValue, ...cleanValueOptions });
+    const stringValue = cleanValue({ value: modifiedValue, ...cleanValueOptions })
 
     if (userMaxLength && stringValue.replace(/-/g, '').length > userMaxLength) {
-      return;
+      return
     }
 
     if (stringValue === '' || stringValue === '-' || stringValue === decimalSeparator) {
-      onValueChange && onValueChange(undefined, name, { float: null, formatted: '', value: '' });
-      setStateValue(stringValue);
+      onValueChange && onValueChange(undefined, name, { float: null, formatted: '', value: '' })
+      setStateValue(stringValue)
       // Always sets cursor after '-' or decimalSeparator input
-      setCursor(1);
-      return;
+      setCursor(1)
+      return
     }
 
     const getStringValueWithoutSeparator = () => {
@@ -147,161 +148,181 @@ export const CurrencyInput = component(({
 
     const stringValueWithoutSeparator = getStringValueWithoutSeparator()
 
-    const numberValue = parseFloat(stringValueWithoutSeparator);
+    const numberValue = parseFloat(stringValueWithoutSeparator)
 
     const formattedValue = formatValue({
       value: stringValue,
-      ...formatValueOptions,
-    });
-
-    const getNewCursor = () => {
-      if (newCursor <= 0) {
-
-      }
-      return newCursor
-    }
+      ...formatValueOptions
+    })
 
     if (detectIsNumber(cursorPosition)) {
       // Prevent cursor jumping
-      let newCursor = cursorPosition + (formattedValue.length - value.length);
-      newCursor = newCursor <= 0 ? (prefix ? prefix.length : 0) : newCursor;
+      const getNewCursor = () => {
+        const newCursor = cursorPosition + (formattedValue.length - value.length)
+        if (newCursor <= 0) {
+          if (prefix) {
+            return prefix.length
+          }
+          return 0
+        }
+        return newCursor
+      }
 
-      setCursor(newCursor);
-      setChangeCount(changeCount + 1);
+      const newCursor = getNewCursor()
+
+      setCursor(newCursor)
+      setChangeCount(changeCount + 1)
     }
 
-    setStateValue(formattedValue);
+    setStateValue(formattedValue)
 
     if (onValueChange) {
       const values = {
         float: numberValue,
         formatted: formattedValue,
-        value: stringValue,
-      };
-      onValueChange(stringValue, name, values);
+        value: stringValue
+      }
+      onValueChange(stringValue, name, values)
     }
-  };
+  }
 
   const handleOnInput = (event) => {
     const {
-      target: { value, selectionStart },
-    } = event;
+      target: { value, selectionStart }
+    } = event
 
-    processChange(value, selectionStart);
+    processChange(value, selectionStart)
 
-    onInput && onInput(event);
-  };
+    onInput && onInput(event)
+  }
 
   const handleOnFocus = (event) => {
-    onFocus && onFocus(event);
-    return stateValue ? stateValue.length : 0;
-  };
+    if (onFocus) {
+      onFocus(event)
+    }
+
+    if (stateValue) {
+      return stateValue.length
+    }
+    return 0
+  }
 
   const handleOnBlur = (event) => {
     const {
-      target: { value },
-    } = event;
+      target: { value }
+    } = event
 
-    const valueOnly = cleanValue({ value, ...cleanValueOptions });
+    const valueOnly = cleanValue({ value, ...cleanValueOptions })
 
     if (valueOnly === '-' || valueOnly === decimalSeparator || !valueOnly) {
-      setStateValue('');
-      onBlur && onBlur(event);
-      return;
+      setStateValue('')
+      onBlur && onBlur(event)
+      return
     }
 
-    const fixedDecimals = fixedDecimalValue(valueOnly, decimalSeparator, fixedDecimalLength);
+    const fixedDecimals = fixedDecimalValue(valueOnly, decimalSeparator, fixedDecimalLength)
+
+    const getDecimalScale = () => {
+      if (detectIsNumber(decimalScale)) {
+        return decimalScale
+      }
+      return fixedDecimalLength
+    }
 
     const newValue = padTrimValue(
       fixedDecimals,
       decimalSeparator,
-      decimalScale !== undefined ? decimalScale : fixedDecimalLength
-    );
+      getDecimalScale()
+    )
 
-    const numberValue = parseFloat(newValue.replace(decimalSeparator, '.'));
+    const numberValue = parseFloat(newValue.replace(decimalSeparator, '.'))
 
     const formattedValue = formatValue({
       ...formatValueOptions,
-      value: newValue,
-    });
+      value: newValue
+    })
 
     if (onValueChange && formatValueOnBlur) {
       onValueChange(newValue, name, {
         float: numberValue,
         formatted: formattedValue,
-        value: newValue,
-      });
+        value: newValue
+      })
     }
 
-    setStateValue(formattedValue);
+    setStateValue(formattedValue)
 
-    onBlur && onBlur(event);
-  };
+    if (onBlur) {
+      onBlur(event)
+    }
+  }
 
   const handleOnKeyDown = (event) => {
-    const { key } = event;
+    const { key } = event
 
-    setLastKeyStroke(key);
+    setLastKeyStroke(key)
 
     if (step && (key === 'ArrowUp' || key === 'ArrowDown')) {
-      event.preventDefault();
-      setCursor(stateValue.length);
+      event.preventDefault()
+      setCursor(stateValue.length)
 
       const currentValue =
         parseFloat(
           detectIsString(userValue)
             ? userValue.replace(decimalSeparator, '.')
             : cleanValue({ value: stateValue, ...cleanValueOptions })
-        ) || 0;
-      const newValue = key === 'ArrowUp' ? currentValue + step : currentValue - step;
+        ) || 0
+      const newValue = key === 'ArrowUp' ? currentValue + step : currentValue - step
 
       if (min !== undefined && newValue < Number(min)) {
-        return;
+        return
       }
 
       if (max !== undefined && newValue > Number(max)) {
-        return;
+        return
       }
 
       const fixedLength = String(step).includes('.')
         ? Number(String(step).split('.')[1].length)
-        : undefined;
+        : undefined
 
       processChange(
         String(fixedLength ? newValue.toFixed(fixedLength) : newValue).replace(
           '.',
           decimalSeparator
         )
-      );
+      )
     }
 
-    onKeyDown && onKeyDown(event);
-  };
+    if (onKeyDown) {
+      onKeyDown(event)
+    }
+  }
 
   const handleOnKeyUp = (event) => {
     const {
       key,
-      target: { selectionStart }, // currentTarget not available in Dark SynthethicEvent
-    } = event;
+      target: { selectionStart }
+    } = event
     if (key !== 'ArrowUp' && key !== 'ArrowDown' && stateValue !== '-') {
-      const suffix = getSuffix(stateValue, { groupSeparator, decimalSeparator });
+      const suffix = getSuffix(stateValue, { groupSeparator, decimalSeparator })
 
       if (suffix && selectionStart && selectionStart > stateValue.length - suffix.length) {
         if (inputRef.current) {
-          const newCursor = stateValue.length - suffix.length;
-          inputRef.current.setSelectionRange(newCursor, newCursor);
+          const newCursor = stateValue.length - suffix.length
+          inputRef.current.setSelectionRange(newCursor, newCursor)
         }
       }
     }
 
-    onKeyUp && onKeyUp(event);
-  };
+    onKeyUp && onKeyUp(event)
+  }
 
   useEffect(() => {
     if (detectIsEmpty(userValue) && detectIsEmpty(defaultValue)) {
-      setStateValue('');
+      setStateValue('')
     }
-  }, [defaultValue, userValue]);
+  }, [defaultValue, userValue])
 
   useEffect(() => {
     // prevent cursor jumping if editing value
@@ -311,9 +332,9 @@ export const CurrencyInput = component(({
       inputRef.current &&
       document.activeElement === inputRef.current
     ) {
-      inputRef.current.setSelectionRange(cursor, cursor);
+      inputRef.current.setSelectionRange(cursor, cursor)
     }
-  }, [stateValue, cursor, inputRef, dirty, changeCount]);
+  }, [stateValue, cursor, inputRef, dirty, changeCount])
 
   /**
    * If user has only entered "-" or decimal separator,
@@ -328,12 +349,12 @@ export const CurrencyInput = component(({
       return formatValue({
         ...formatValueOptions,
         decimalScale: dirty ? undefined : decimalScale,
-        value: userValue,
-      });
+        value: userValue
+      })
     }
 
-    return stateValue;
-  };
+    return stateValue
+  }
 
   const inputProps = {
     type: 'text',
@@ -350,15 +371,15 @@ export const CurrencyInput = component(({
     disabled,
     value: getRenderValue(),
     ref: inputRef,
-    ...props,
-  };
-
-  if (customInput) {
-    const CustomInput = customInput;
-    return <CustomInput {...inputProps} />;
+    ...props
   }
 
-  return <input {...inputProps} />;
+  if (customInput) {
+    const CustomInput = customInput
+    return <CustomInput {...inputProps} />
+  }
+
+  return <input {...inputProps} />
 })
 
-export default CurrencyInput;
+export default CurrencyInput

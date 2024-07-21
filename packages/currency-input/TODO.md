@@ -1,4 +1,4 @@
-- value is expected to be string
+- Do not return undefined
 - remove ternary operators
 - remove default parameter values in function definitions
 - remove renamed parameters

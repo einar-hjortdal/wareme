@@ -1,1 +1,3 @@
-export { CurrencyInput } from "./CurrencyInput";
+import CurrencyInput from "./CurrencyInput";
+
+export { CurrencyInput }

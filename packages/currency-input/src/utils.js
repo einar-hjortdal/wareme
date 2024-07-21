@@ -1,62 +1,74 @@
-import { illegal } from "@dark-engine/core";
+import {
+  detectIsArray,
+  detectIsEmpty,
+  detectIsNull,
+  detectIsNumber,
+  detectIsString,
+  illegal
+} from '@dark-engine/core'
 
 export const throwError = (msg) => illegal(msg, 'currency-input')
 
 export const isNumber = (input) => /\d/gi.test(input)
 
 export const addSeparators = (value/* : string */, separator = ',')/* : string */ => {
-  return value.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
-};
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, separator)
+}
 
 // https://stackoverflow.com/questions/17885855/use-dynamic-variable-string-as-regex-pattern-in-javascript
 export const escapeRegExp = (stringToGoIntoTheRegex/* : string */)/* : string */ => {
-  return stringToGoIntoTheRegex.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-};
+  return stringToGoIntoTheRegex.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
 
 export const removeSeparators = (value/* : string */, separator = ',')/* : string */ => {
-  const reg = new RegExp(escapeRegExp(separator), 'g');
-  return value.replace(reg, '');
-};
+  const reg = new RegExp(escapeRegExp(separator), 'g')
+  return value.replace(reg, '')
+}
 
 export const removeInvalidChars = (value/* : string */, validChars/* : Array<string> */)/* : string */ => {
-  const chars = escapeRegExp(validChars.join(''));
-  const reg = new RegExp(`[^\\d${chars}]`, 'gi');
-  return value.replace(reg, '');
-};
+  const chars = escapeRegExp(validChars.join(''))
+  const reg = new RegExp(`[^\\d${chars}]`, 'gi')
+  return value.replace(reg, '')
+}
 
 // https://stackoverflow.com/a/9345181
 export const abbrValue = (value/* : number */, decimalSeparator = '.', _decimalPlaces = 10)/* : string */ => {
   if (value > 999) {
-    let valueLength = ('' + value).length;
-    const p = Math.pow;
-    const d = p(10, _decimalPlaces);
-    valueLength -= valueLength % 3;
+    let valueLength = ('' + value).length
+    const p = Math.pow
+    const d = p(10, _decimalPlaces)
+    valueLength -= valueLength % 3
 
-    const abbrValue = Math.round((value * d) / p(10, valueLength)) / d + ' kMGTPE'[valueLength / 3];
-    return abbrValue.replace('.', decimalSeparator);
+    const abbrValue = Math.round((value * d) / p(10, valueLength)) / d + ' kMGTPE'[valueLength / 3]
+    return abbrValue.replace('.', decimalSeparator)
   }
 
-  return String(value);
-};
+  return String(value)
+}
 
-const abbrMap = { k: 1000, m: 1000000, b: 1000000000 };
+const abbreviationsMap = {
+  k: 1_000,
+  m: 1_000_000,
+  b: 1_000_000_000
+}
 
 /**
  * Parse a value with abbreviation e.g 1k = 1000
  */
-export const parseAbbrValue = (value/* : string */, decimalSeparator = '.')/* : number | undefined */ => {
-  const reg = new RegExp(`(\\d+(${escapeRegExp(decimalSeparator)}\\d*)?)([kmb])$`, 'i');
-  const match = value.match(reg);
+export const parseAbbrValue = (value/* : string */, decimalSeparator = '.')/* : string | null */ => {
+  const reg = new RegExp(`(\\d+(${escapeRegExp(decimalSeparator)}\\d*)?)([kmb])$`, 'i')
+  const match = value.match(reg)
 
   if (match) {
-    const [, digits, , abbr] = match;
-    const multiplier = abbrMap[abbr.toLowerCase()];
+    const [, digits, , abbr] = match
+    const multiplier = abbreviationsMap[abbr.toLowerCase()]
+    const result = Number(digits.replace(decimalSeparator, '.')) * multiplier
 
-    return Number(digits.replace(decimalSeparator, '.')) * multiplier;
+    return String(result)
   }
 
-  return undefined;
-};
+  return null
+}
 
 /**
  * Remove prefix, separators and extra decimals from value
@@ -70,33 +82,47 @@ export const cleanValue = ({
   allowNegativeValue = true,
   disableAbbreviations = false,
   prefix = '',
-  transformRawValue = (rawValue) => rawValue,
+  transformRawValue = (rawValue) => rawValue
 }) => {
-  const transformedValue = transformRawValue(value);
+  const transformedValue = transformRawValue(value)
 
   if (transformedValue === '-') {
-    return transformedValue;
+    return transformedValue
   }
 
-  const abbreviations = disableAbbreviations ? [] : ['k', 'm', 'b'];
-  const reg = new RegExp(`((^|\\D)-\\d)|(-${escapeRegExp(prefix)})`);
-  const isNegative = reg.test(transformedValue);
+  const getAbbreviations = () => {
+    if (disableAbbreviations) {
+      return []
+    }
+    return ['k', 'm', 'b']
+  }
+
+  const abbreviations = getAbbreviations()
+  const reg = new RegExp(`((^|\\D)-\\d)|(-${escapeRegExp(prefix)})`)
+  const isNegative = reg.test(transformedValue)
 
   // Is there a digit before the prefix? eg. 1$
-  const [prefixWithValue, preValue] = RegExp(`(\\d+)-?${escapeRegExp(prefix)}`).exec(value) || [];
-  const withoutPrefix = prefix
-    ? prefixWithValue
-      ? transformedValue.replace(prefixWithValue, '').concat(preValue)
-      : transformedValue.replace(prefix, '')
-    : transformedValue;
-  const withoutSeparators = removeSeparators(withoutPrefix, groupSeparator);
+  const [prefixWithValue, preValue] = RegExp(`(\\d+)-?${escapeRegExp(prefix)}`).exec(value) || []
+
+  const getWithoutPrefix = () => {
+    if (prefix) {
+      if (prefixWithValue) {
+        return transformedValue.replace(prefixWithValue, '').concat(preValue)
+      }
+      return transformedValue.replace(prefix, '')
+    }
+    return transformedValue
+  }
+
+  const withoutPrefix = getWithoutPrefix()
+  const withoutSeparators = removeSeparators(withoutPrefix, groupSeparator)
   const withoutInvalidChars = removeInvalidChars(withoutSeparators, [
     groupSeparator,
     decimalSeparator,
-    ...abbreviations,
-  ]);
+    ...abbreviations
+  ])
 
-  let valueOnly = withoutInvalidChars;
+  let valueOnly = withoutInvalidChars
 
   if (!disableAbbreviations) {
     // disallow letter without number
@@ -105,26 +131,34 @@ export const cleanValue = ({
         (letter) => letter === withoutInvalidChars.toLowerCase().replace(decimalSeparator, '')
       )
     ) {
-      return '';
+      return ''
     }
-    const parsed = parseAbbrValue(withoutInvalidChars, decimalSeparator);
-    if (parsed) {
-      valueOnly = String(parsed);
+
+    const parsed = parseAbbrValue(withoutInvalidChars, decimalSeparator)
+    if (detectIsString(parsed)) {
+      valueOnly = parsed
     }
   }
 
-  const includeNegative = isNegative && allowNegativeValue ? '-' : '';
+  const getIncludeNegative = () => {
+    if (isNegative && allowNegativeValue) {
+      return '-'
+    }
+    return ''
+  }
+
+  const includeNegative = getIncludeNegative()
 
   if (decimalSeparator && valueOnly.includes(decimalSeparator)) {
-    const [int, decimals] = withoutInvalidChars.split(decimalSeparator);
-    const trimmedDecimals = decimalsLimit && decimals ? decimals.slice(0, decimalsLimit) : decimals;
-    const includeDecimals = allowDecimals ? `${decimalSeparator}${trimmedDecimals}` : '';
+    const [int, decimals] = withoutInvalidChars.split(decimalSeparator)
+    const trimmedDecimals = decimalsLimit && decimals ? decimals.slice(0, decimalsLimit) : decimals
+    const includeDecimals = allowDecimals ? `${decimalSeparator}${trimmedDecimals}` : ''
 
-    return `${includeNegative}${int}${includeDecimals}`;
+    return `${includeNegative}${int}${includeDecimals}`
   }
 
-  return `${includeNegative}${valueOnly}`;
-};
+  return `${includeNegative}${valueOnly}`
+}
 
 export const fixedDecimalValue = (
   value/* : string */,
@@ -133,82 +167,94 @@ export const fixedDecimalValue = (
 )/* : string */ => {
   if (fixedDecimalLength !== undefined && value.length > 1) {
     if (fixedDecimalLength === 0) {
-      return value.replace(decimalSeparator, '');
+      return value.replace(decimalSeparator, '')
     }
 
     if (value.includes(decimalSeparator)) {
-      const [int, decimals] = value.split(decimalSeparator);
+      const [int, decimals] = value.split(decimalSeparator)
 
       if (decimals.length === fixedDecimalLength) {
-        return value;
+        return value
       }
 
       if (decimals.length > fixedDecimalLength) {
-        return `${int}${decimalSeparator}${decimals.slice(0, fixedDecimalLength)}`;
+        return `${int}${decimalSeparator}${decimals.slice(0, fixedDecimalLength)}`
       }
     }
 
-    const reg =
-      value.length > fixedDecimalLength
-        ? new RegExp(`(\\d+)(\\d{${fixedDecimalLength}})`)
-        : new RegExp(`(\\d)(\\d+)`);
+    const getRegex = () => {
+      if (value.length > fixedDecimalLength) {
+        return new RegExp(`(\\d+)(\\d{${fixedDecimalLength}})`)
+      }
+      return /(\d)(\d+)/
+    }
 
-    const match = value.match(reg);
+    const regex = getRegex()
+
+    const match = value.match(regex)
     if (match) {
-      const [, int, decimals] = match;
-      return `${int}${decimalSeparator}${decimals}`;
+      const [, int, decimals] = match
+      return `${int}${decimalSeparator}${decimals}`
     }
   }
 
-  return value;
-};
+  return value
+}
 
 export const getSuffix = (
   value/* : string */,
   { groupSeparator = ',', decimalSeparator = '.' }
 ) => {
-  const suffixReg = new RegExp(
+  const suffixRegex = new RegExp(
     `\\d([^${escapeRegExp(groupSeparator)}${escapeRegExp(decimalSeparator)}0-9]+)`
-  );
-  const suffixMatch = value.match(suffixReg);
-  return suffixMatch ? suffixMatch[1] : undefined;
-};
+  )
+  const suffixMatch = value.match(suffixRegex)
+  if (detectIsArray(suffixMatch)) {
+    return suffixMatch[1]
+  }
+  return undefined
+}
 
 const defaultConfig = {
   currencySymbol: '',
   groupSeparator: '',
   decimalSeparator: '',
   prefix: '',
-  suffix: '',
-};
+  suffix: ''
+}
 
 /**
  * Get locale config from input or default
  */
 export const getLocaleConfig = (intlConfig) => {
-  const { locale, currency } = intlConfig || {};
-  const numberFormatter = locale
-    ? new Intl.NumberFormat(locale, currency ? { currency, style: 'currency' } : undefined)
-    : new Intl.NumberFormat();
+  const { locale, currency } = intlConfig || {}
+  const getNumberFormatter = () => {
+    if (locale) {
+      return new Intl.NumberFormat(locale, currency ? { currency, style: 'currency' } : undefined)
+    }
+    return new Intl.NumberFormat()
+  }
+
+  const numberFormatter = getNumberFormatter()
 
   return numberFormatter.formatToParts(1000.1).reduce((prev, curr, i) => {
     if (curr.type === 'currency') {
       if (i === 0) {
-        return { ...prev, currencySymbol: curr.value, prefix: curr.value };
+        return { ...prev, currencySymbol: curr.value, prefix: curr.value }
       } else {
-        return { ...prev, currencySymbol: curr.value, suffix: curr.value };
+        return { ...prev, currencySymbol: curr.value, suffix: curr.value }
       }
     }
     if (curr.type === 'group') {
-      return { ...prev, groupSeparator: curr.value };
+      return { ...prev, groupSeparator: curr.value }
     }
     if (curr.type === 'decimal') {
-      return { ...prev, decimalSeparator: curr.value };
+      return { ...prev, decimalSeparator: curr.value }
     }
 
-    return prev;
-  }, defaultConfig);
-};
+    return prev
+  }, defaultConfig)
+}
 
 /**
  * Format value with decimal separator, group separator and prefix
@@ -220,34 +266,34 @@ export const formatValue = (options)/* : string */ => {
     intlConfig,
     decimalScale,
     prefix = '',
-    suffix = '',
-  } = options;
+    suffix = ''
+  } = options
 
   if (_value === '' || _value === undefined) {
-    return '';
+    return ''
   }
 
   if (_value === '-') {
-    return '-';
+    return '-'
   }
 
   const isNegative = new RegExp(`^\\d?-${prefix ? `${escapeRegExp(prefix)}?` : ''}\\d`).test(
     _value
-  );
+  )
 
   let value =
     decimalSeparator !== '.'
       ? replaceDecimalSeparator(_value, decimalSeparator, isNegative)
-      : _value;
+      : _value
 
   if (decimalSeparator && decimalSeparator !== '-' && value.startsWith(decimalSeparator)) {
-    value = '0' + value;
+    value = '0' + value
   }
 
   const defaultNumberFormatOptions = {
     minimumFractionDigits: decimalScale || 0,
-    maximumFractionDigits: 20,
-  };
+    maximumFractionDigits: 20
+  }
 
   const numberFormatter = intlConfig
     ? new Intl.NumberFormat(
@@ -256,54 +302,55 @@ export const formatValue = (options)/* : string */ => {
         ? {
           ...defaultNumberFormatOptions,
           style: 'currency',
-          currency: intlConfig.currency,
+          currency: intlConfig.currency
         }
         : defaultNumberFormatOptions
     )
-    : new Intl.NumberFormat(undefined, defaultNumberFormatOptions);
+    : new Intl.NumberFormat(undefined, defaultNumberFormatOptions)
 
-  const parts = numberFormatter.formatToParts(Number(value));
+  const parts = numberFormatter.formatToParts(Number(value))
 
-  let formatted = replaceParts(parts, options);
+  let formatted = replaceParts(parts, options)
 
   // Does intl formatting add a suffix?
-  const intlSuffix = getSuffix(formatted, { ...options });
+  const intlSuffix = getSuffix(formatted, { ...options })
 
   // Include decimal separator if user input ends with decimal separator
-  const includeDecimalSeparator = _value.slice(-1) === decimalSeparator ? decimalSeparator : '';
+  const includeDecimalSeparator = _value.slice(-1) === decimalSeparator ? decimalSeparator : ''
 
-  const [, decimals] = value.match(RegExp('\\d+\\.(\\d+)')) || [];
+  const regex = /(\d+)\.(\d+)/
+  const [, decimals] = value.match(regex) || []
 
   // Keep original decimal padding if no decimalScale
-  if (decimalScale === undefined && decimals && decimalSeparator) {
+  if (detectIsEmpty(decimalScale) && decimals && decimalSeparator) {
     if (formatted.includes(decimalSeparator)) {
       formatted = formatted.replace(
         RegExp(`(\\d+)(${escapeRegExp(decimalSeparator)})(\\d+)`, 'g'),
         `$1$2${decimals}`
-      );
+      )
     } else {
       if (intlSuffix && !suffix) {
-        formatted = formatted.replace(intlSuffix, `${decimalSeparator}${decimals}${intlSuffix}`);
+        formatted = formatted.replace(intlSuffix, `${decimalSeparator}${decimals}${intlSuffix}`)
       } else {
-        formatted = `${formatted}${decimalSeparator}${decimals}`;
+        formatted = `${formatted}${decimalSeparator}${decimals}`
       }
     }
   }
 
   if (suffix && includeDecimalSeparator) {
-    return `${formatted}${includeDecimalSeparator}${suffix}`;
+    return `${formatted}${includeDecimalSeparator}${suffix}`
   }
 
   if (intlSuffix && includeDecimalSeparator) {
-    return formatted.replace(intlSuffix, `${includeDecimalSeparator}${intlSuffix}`);
+    return formatted.replace(intlSuffix, `${includeDecimalSeparator}${intlSuffix}`)
   }
 
   if (intlSuffix && suffix) {
-    return formatted.replace(intlSuffix, `${includeDecimalSeparator}${suffix}`);
+    return formatted.replace(intlSuffix, `${includeDecimalSeparator}${suffix}`)
   }
 
-  return [formatted, includeDecimalSeparator, suffix].join('');
-};
+  return [formatted, includeDecimalSeparator, suffix].join('')
+}
 
 /**
  * Before converting to Number, decimal separator has to be .
@@ -313,15 +360,15 @@ const replaceDecimalSeparator = (
   decimalSeparator,
   isNegative/* : boolean */
 )/* : string */ => {
-  let newValue = value;
+  let newValue = value
   if (decimalSeparator && decimalSeparator !== '.') {
-    newValue = newValue.replace(RegExp(escapeRegExp(decimalSeparator), 'g'), '.');
+    newValue = newValue.replace(RegExp(escapeRegExp(decimalSeparator), 'g'), '.')
     if (isNegative && decimalSeparator === '-') {
-      newValue = `-${newValue.slice(1)}`;
+      newValue = `-${newValue.slice(1)}`
     }
   }
-  return newValue;
-};
+  return newValue
+}
 
 const replaceParts = (
   parts,
@@ -330,51 +377,51 @@ const replaceParts = (
     groupSeparator,
     decimalSeparator,
     decimalScale,
-    disableGroupSeparators = false,
+    disableGroupSeparators = false
   })/* : string */ => {
   return parts
     .reduce(
       (prev, { type, value }, i) => {
         if (i === 0 && prefix) {
           if (type === 'minusSign') {
-            return [value, prefix];
+            return [value, prefix]
           }
 
           if (type === 'currency') {
-            return [...prev, prefix];
+            return [...prev, prefix]
           }
 
-          return [prefix, value];
+          return [prefix, value]
         }
 
         if (type === 'currency') {
-          return prefix ? prev : [...prev, value];
+          return prefix ? prev : [...prev, value]
         }
 
         if (type === 'group') {
           return !disableGroupSeparators
             ? [...prev, groupSeparator !== undefined ? groupSeparator : value]
-            : prev;
+            : prev
         }
 
         if (type === 'decimal') {
           if (decimalScale !== undefined && decimalScale === 0) {
-            return prev;
+            return prev
           }
 
-          return [...prev, decimalSeparator !== undefined ? decimalSeparator : value];
+          return [...prev, decimalSeparator !== undefined ? decimalSeparator : value]
         }
 
         if (type === 'fraction') {
-          return [...prev, decimalScale !== undefined ? value.slice(0, decimalScale) : value];
+          return [...prev, decimalScale !== undefined ? value.slice(0, decimalScale) : value]
         }
 
-        return [...prev, value];
+        return [...prev, value]
       },
       ['']
     )
-    .join('');
-};
+    .join('')
+}
 
 export const padTrimValue = (
   value/* : string */,
@@ -382,56 +429,57 @@ export const padTrimValue = (
   decimalScale/* : number | undefined */
 )/* : string */ => {
   if (decimalScale === undefined || value === '' || value === undefined) {
-    return value;
+    return value
   }
 
-  if (!value.match(/\d/g)) {
-    return '';
+  const matches = value.match(/\d/g)
+  if (detectIsNull(matches)) {
+    return ''
   }
 
-  const [int, decimals] = value.split(decimalSeparator);
+  const [int, decimals] = value.split(decimalSeparator)
 
   if (decimalScale === 0) {
-    return int;
+    return int
   }
 
-  let newValue = decimals || '';
+  let newValue = decimals || ''
 
   if (newValue.length < decimalScale) {
     while (newValue.length < decimalScale) {
-      newValue += '0';
+      newValue += '0'
     }
   } else {
-    newValue = newValue.slice(0, decimalScale);
+    newValue = newValue.slice(0, decimalScale)
   }
 
-  return `${int}${decimalSeparator}${newValue}`;
-};
+  return `${int}${decimalSeparator}${newValue}`
+}
 
 export const repositionCursor = ({
   selectionStart/*: number | null | undefined */,
   value/*: number  */,
   lastKeyStroke/* : string | null */,
   stateValue/* : string | undefined */,
-  groupSeparator/* : string | undefined */,
+  groupSeparator/* : string | undefined */
 }) /* {  modifiedValue: string  cursorPosition: number | null | undefined} */ => {
-  let cursorPosition = selectionStart;
-  let modifiedValue = value;
+  let cursorPosition = selectionStart
+  let modifiedValue = value
   if (stateValue && cursorPosition) {
-    const splitValue = value.split('');
+    const splitValue = value.split('')
     // if cursor is to right of groupSeparator and backspace pressed, delete the character to the left of the separator and reposition the cursor
     if (lastKeyStroke === 'Backspace' && stateValue[cursorPosition] === groupSeparator) {
-      splitValue.splice(cursorPosition - 1, 1);
-      cursorPosition -= 1;
+      splitValue.splice(cursorPosition - 1, 1)
+      cursorPosition -= 1
     }
     // if cursor is to left of groupSeparator and delete pressed, delete the character to the right of the separator and reposition the cursor
     if (lastKeyStroke === 'Delete' && stateValue[cursorPosition] === groupSeparator) {
-      splitValue.splice(cursorPosition, 1);
-      cursorPosition += 1;
+      splitValue.splice(cursorPosition, 1)
+      cursorPosition += 1
     }
-    modifiedValue = splitValue.join('');
-    return { modifiedValue, cursorPosition };
+    modifiedValue = splitValue.join('')
+    return { modifiedValue, cursorPosition }
   }
 
-  return { modifiedValue, cursorPosition: selectionStart };
-};
+  return { modifiedValue, cursorPosition: selectionStart }
+}
