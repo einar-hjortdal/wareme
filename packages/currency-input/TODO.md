@@ -1,0 +1,4 @@
+- value is expected to be string
+- remove ternary operators
+- remove default parameter values in function definitions
+- remove renamed parameters
