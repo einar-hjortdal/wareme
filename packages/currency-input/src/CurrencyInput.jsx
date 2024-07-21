@@ -7,7 +7,7 @@ import {
   detectIsEmpty,
   detectIsString,
   detectIsNumber,
-  detectIsUndefined
+  detectIsNull,
 } from '@dark-engine/core'
 import {
   throwError,
@@ -20,6 +20,7 @@ import {
   getSuffix,
   repositionCursor
 } from './utils'
+import { detectIsNaN } from '@wareme/utils/src'
 
 const CurrencyInput = component(({
   allowDecimals = true,
@@ -187,9 +188,7 @@ const CurrencyInput = component(({
   }
 
   const handleOnInput = (event) => {
-    const {
-      target: { value, selectionStart }
-    } = event
+    const { value, selectionStart } = event.target
 
     processChange(value, selectionStart)
 
@@ -208,9 +207,7 @@ const CurrencyInput = component(({
   }
 
   const handleOnBlur = (event) => {
-    const {
-      target: { value }
-    } = event
+    const { value } = event.target
 
     const valueOnly = cleanValue({ value, ...cleanValueOptions })
 
@@ -258,7 +255,7 @@ const CurrencyInput = component(({
   }
 
   const handleOnKeyDown = (event) => {
-    const { key } = event
+    const { key } = event.sourceEvent
 
     setLastKeyStroke(key)
 
@@ -266,13 +263,31 @@ const CurrencyInput = component(({
       event.preventDefault()
       setCursor(stateValue.length)
 
-      const currentValue =
-        parseFloat(
-          detectIsString(userValue)
-            ? userValue.replace(decimalSeparator, '.')
-            : cleanValue({ value: stateValue, ...cleanValueOptions })
-        ) || 0
-      const newValue = key === 'ArrowUp' ? currentValue + step : currentValue - step
+      const getCurrentValue = () => {
+        if (detectIsString(userValue)) {
+          return userValue.replace(decimalSeparator, '.')
+        }
+        return cleanValue({ value: stateValue, ...cleanValueOptions })
+      }
+
+      const getParsedCurrentValue = () => {
+        const parsed = parseFloat(getCurrentValue())
+        if (detectIsNaN(parsed)) {
+          return 0
+        }
+        return parsed
+      }
+
+      const currentValue = getParsedCurrentValue()
+
+      const getNewValue = () => {
+        if (key === 'ArrowUp') {
+          return currentValue + step
+        }
+        return currentValue - step
+      }
+
+      const newValue = getNewValue()
 
       if (min !== undefined && newValue < Number(min)) {
         return
@@ -282,16 +297,23 @@ const CurrencyInput = component(({
         return
       }
 
-      const fixedLength = String(step).includes('.')
-        ? Number(String(step).split('.')[1].length)
-        : undefined
+      const getFixedLength = () => {
+        if (String(step).includes('.')) {
+          return Number(String(step).split('.')[1].length)
+        }
+        return null
+      }
 
-      processChange(
-        String(fixedLength ? newValue.toFixed(fixedLength) : newValue).replace(
-          '.',
-          decimalSeparator
-        )
-      )
+      const fixedLength = getFixedLength()
+
+      const getValueToProcess = () => {
+        if (detectIsNull(fixedLength)) {
+          return newValue
+        }
+        return newValue.toFixed(fixedLength)
+      }
+
+      processChange(String(getValueToProcess()).replace('.', decimalSeparator))
     }
 
     if (onKeyDown) {
@@ -300,10 +322,9 @@ const CurrencyInput = component(({
   }
 
   const handleOnKeyUp = (event) => {
-    const {
-      key,
-      target: { selectionStart }
-    } = event
+    const { key } = event.sourceEvent
+    const { selectionStart } = event.target
+
     if (key !== 'ArrowUp' && key !== 'ArrowDown' && stateValue !== '-') {
       const suffix = getSuffix(stateValue, { groupSeparator, decimalSeparator })
 
@@ -346,9 +367,16 @@ const CurrencyInput = component(({
       stateValue !== '-' &&
       (!decimalSeparator || stateValue !== decimalSeparator)
     ) {
+      const getDecimalScale = () => {
+        if (dirty) {
+          return null
+        }
+        return decimalScale
+      }
+
       return formatValue({
         ...formatValueOptions,
-        decimalScale: dirty ? undefined : decimalScale,
+        decimalScale: getDecimalScale(),
         value: userValue
       })
     }

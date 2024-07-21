@@ -52,34 +52,30 @@ export const Example1 = component(() => {
 
         <form >
           <div >
-            <div >
-              <label htmlFor="validationCustom01">Please enter a value (max £1,000)</label>
-              <CurrencyInput
-                id="validationCustom01"
-                name="input-1"
-                className={className}
-                value={value}
-                onValueChange={handleOnValueChange}
-                placeholder="Please enter a number"
-                prefix={prefix}
-                step={1}
-              />
-              <div>{errorMessage}</div>
-            </div>
-            <div>
-              <pre >
-                <div >
-                  <div >
-                    <div>onValueChange:</div>
-                    {value}
-                  </div>
-                  <div >
-                    <div >Values:</div>
-                    {JSON.stringify(values, undefined, ' ')}
-                  </div>
-                </div>
-              </pre>
-            </div>
+            <label htmlFor="validationCustom01">Please enter a value (max £1,000)</label>
+            <CurrencyInput
+              id="validationCustom01"
+              name="input-1"
+              className={className}
+              value={value}
+              onValueChange={handleOnValueChange}
+              placeholder="Please enter a number"
+              prefix={prefix}
+              step={1}
+            />
+            <div>{errorMessage}</div>
+          </div>
+          <div>
+            <pre >
+              <div >
+                <div>onValueChange:</div>
+                {value}
+              </div>
+              <div >
+                <div >Values:</div>
+                {JSON.stringify(values, undefined, ' ')}
+              </div>
+            </pre>
           </div>
         </form>
       </div>

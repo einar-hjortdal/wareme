@@ -1,39 +1,16 @@
 import { component } from '@dark-engine/core'
 import { createRoot } from '@dark-engine/platform-browser'
-import { NavLink, Router } from '@dark-engine/web-router'
 
 import Example1 from './example-1'
-
-const Nav = component(({ slot }) => {
-  return (
-    <div>
-      <div>
-        <ul>
-          <li><NavLink to='/example-1'>example 1</NavLink></li>
-        </ul>
-      </div>
-      {slot}
-    </div>
-  )
-})
+import Example2 from './example-2'
 
 const App = component(() => {
   return (
-    <Router routes={[
-      {
-        path: '',
-        component: Nav,
-        children: [
-          {
-            path: 'example-1',
-            component: Example1
-          }
-
-        ]
-      }
-    ]}>
-      {slot => slot}
-    </Router>
+    <div>
+      <h1>@wareme/currency-input</h1>
+      <Example1 />
+      <Example2 />
+    </div>
   )
 })
 
