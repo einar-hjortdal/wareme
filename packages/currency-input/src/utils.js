@@ -4,6 +4,7 @@ import {
   detectIsNull,
   detectIsNumber,
   detectIsString,
+  detectIsUndefined,
   illegal
 } from '@dark-engine/core'
 
@@ -165,7 +166,7 @@ export const fixedDecimalValue = (
   decimalSeparator/* : string */,
   fixedDecimalLength/* : number */
 )/* : string */ => {
-  if (fixedDecimalLength !== undefined && value.length > 1) {
+  if (detectIsNumber(fixedDecimalLength) && value.length > 1) {
     if (fixedDecimalLength === 0) {
       return value.replace(decimalSeparator, '')
     }
@@ -212,7 +213,7 @@ export const getSuffix = (
   if (detectIsArray(suffixMatch)) {
     return suffixMatch[1]
   }
-  return undefined
+  return null
 }
 
 const defaultConfig = {
@@ -230,7 +231,10 @@ export const getLocaleConfig = (intlConfig) => {
   const { locale, currency } = intlConfig || {}
   const getNumberFormatter = () => {
     if (locale) {
-      return new Intl.NumberFormat(locale, currency ? { currency, style: 'currency' } : undefined)
+      if (currency) {
+        return new Intl.NumberFormat(locale, { currency, style: 'currency' })
+      }
+      return new Intl.NumberFormat(locale)
     }
     return new Intl.NumberFormat()
   }
@@ -269,7 +273,7 @@ export const formatValue = (options)/* : string */ => {
     suffix = ''
   } = options
 
-  if (_value === '' || _value === undefined) {
+  if (_value === '' || detectIsUndefined(_value)) {
     return ''
   }
 
@@ -395,25 +399,37 @@ const replaceParts = (
         }
 
         if (type === 'currency') {
-          return prefix ? prev : [...prev, value]
+          if (prefix) {
+            return prev
+          }
+          return [...prev, value]
         }
 
         if (type === 'group') {
-          return !disableGroupSeparators
-            ? [...prev, groupSeparator !== undefined ? groupSeparator : value]
-            : prev
+          if (!disableGroupSeparators) {
+            if (groupSeparator) {
+              return [...prev, groupSeparator]
+            }
+            return [...prev, value]
+          }
+          return prev
         }
 
         if (type === 'decimal') {
-          if (decimalScale !== undefined && decimalScale === 0) {
+          if (decimalScale && decimalScale === 0) {
             return prev
           }
-
-          return [...prev, decimalSeparator !== undefined ? decimalSeparator : value]
+          if (decimalSeparator) {
+            return [...prev, decimalSeparator]
+          }
+          return [...prev, value]
         }
 
         if (type === 'fraction') {
-          return [...prev, decimalScale !== undefined ? value.slice(0, decimalScale) : value]
+          if (decimalScale) {
+            return [...prev, value.slice(0, decimalScale)]
+          }
+          return [...prev, value]
         }
 
         return [...prev, value]
@@ -424,11 +440,11 @@ const replaceParts = (
 }
 
 export const padTrimValue = (
-  value/* : string */,
+  value/* : string | undefined */,
   decimalSeparator = '.',
   decimalScale/* : number | undefined */
 )/* : string */ => {
-  if (decimalScale === undefined || value === '' || value === undefined) {
+  if (detectIsUndefined(decimalScale) || value === '' || detectIsUndefined(value)) {
     return value
   }
 
