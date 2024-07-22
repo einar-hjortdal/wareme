@@ -20,7 +20,7 @@ import {
   getSuffix,
   repositionCursor
 } from './utils'
-import { detectIsNaN } from '@wareme/utils/src'
+import { detectIsNaN } from '@wareme/utils'
 
 const CurrencyInput = component(({
   allowDecimals = true,

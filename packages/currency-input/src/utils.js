@@ -322,8 +322,18 @@ export const formatValue = (options)/* : string */ => {
   // Include decimal separator if user input ends with decimal separator
   const includeDecimalSeparator = _value.slice(-1) === decimalSeparator ? decimalSeparator : ''
 
-  const regex = /(\d+)\.(\d+)/
-  const [, decimals] = value.match(regex) || []
+
+  const getDecimals = () => {
+    const regex = /\d+\.(\d+)/
+    const matches = value.match(regex)
+    if (detectIsArray(matches) && matches.length > 1) {
+      const decimals = matches[1]
+      return decimals
+    }
+
+    return null
+  }
+  const decimals = getDecimals()
 
   // Keep original decimal padding if no decimalScale
   if (detectIsEmpty(decimalScale) && decimals && decimalSeparator) {
