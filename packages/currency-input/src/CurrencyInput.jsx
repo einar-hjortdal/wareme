@@ -42,8 +42,8 @@ const CurrencyInput = component(({
   suffix,
   intlConfig,
   step,
-  min,
-  max,
+  min/*: number | undefined */,
+  max/*: number | undefined */,
   disableGroupSeparators = false,
   disableAbbreviations = false,
   decimalSeparator: _decimalSeparator,
@@ -289,11 +289,11 @@ const CurrencyInput = component(({
 
       const newValue = getNewValue()
 
-      if (min !== undefined && newValue < Number(min)) {
+      if (detectIsNumber(min) && newValue < min) {
         return
       }
 
-      if (max !== undefined && newValue > Number(max)) {
+      if (detectIsNumber(max) && newValue > max) {
         return
       }
 
