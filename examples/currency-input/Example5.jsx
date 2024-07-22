@@ -30,15 +30,6 @@ const Example5 = component(() => {
     setdisableGroupSeparators(value === "true" ? true : false)
   }
 
-  console.log(value)
-  console.log(formatValue({
-    value,
-    // groupSeparator,
-    decimalSeparator,
-    disableGroupSeparators,
-    prefix
-  }))
-
   return (
     <div>
       <h2>Format values example</h2>
