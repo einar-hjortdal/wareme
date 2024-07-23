@@ -8,27 +8,45 @@ const Example5 = component(() => {
   const [decimalSeparator, setDecimalSeparator] = useState(".")
   const [disableGroupSeparators, setdisableGroupSeparators] = useState(false)
 
-  const handleValueChange = ({ target: { value } }) => {
+  const getValueFromEvent = (event) => {
+    return event.target.value
+  }
+
+  const handleValueChange = (event) => {
+    const value = getValueFromEvent(event)
     setValue(value)
   }
 
-  const handlePrefixChange = ({ target: { value } }) => {
+  const handlePrefixChange = (event) => {
+    const value = getValueFromEvent(event)
     setPrefix(value)
   }
 
-  const handleGroupSeparatorChange = ({ target: { value } }) => {
+  const handleGroupSeparatorChange = (event) => {
+    const value = getValueFromEvent(event)
     setGroupSeparator(value)
   }
 
-  const handleDecimalSeparatorChange = ({
-    target: { value: newDecimalSeparator }
-  }) => {
-    setDecimalSeparator(newDecimalSeparator)
+  const handleDecimalSeparatorChange = (event) => {
+    const value = getValueFromEvent(event)
+    setDecimalSeparator(value)
   }
 
-  const handleTurnOffSeparatorChange = ({ target: { value } }) => {
-    setdisableGroupSeparators(value === "true" ? true : false)
+  const handleTurnOffSeparatorChange = (event) => {
+    const value = getValueFromEvent(event)
+    if (value === 'true') {
+      return setdisableGroupSeparators(true)
+    }
+    return setdisableGroupSeparators(false)
   }
+
+  const formattedValue = formatValue({
+    value,
+    groupSeparator,
+    decimalSeparator,
+    disableGroupSeparators,
+    prefix
+  })
 
   return (
     <div>
@@ -109,13 +127,7 @@ const Example5 = component(() => {
         <div >
           Formatted value:
           <div >
-            {formatValue({
-              value,
-              groupSeparator,
-              decimalSeparator,
-              disableGroupSeparators,
-              prefix
-            })}
+            {formattedValue}
           </div>
         </div>
       </div>
