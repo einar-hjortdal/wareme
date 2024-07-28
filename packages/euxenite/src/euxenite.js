@@ -169,9 +169,9 @@ export const createCookie = (sessionId) => {
 }
 
 export const getNewSessionExpirationDate = () => {
-  const res = new Date()
-  res.setDate(res.getSeconds() + sessionDurationInSeconds)
-  return res
+  const now = new Date()
+  const later = new Date(now.getTime() + sessionDurationInSeconds * 1000)
+  return later
 }
 
 export const getSessionsFromFile = async () => {
