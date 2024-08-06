@@ -29,23 +29,23 @@ export class Odayaka {
   targetScroll
   animatedScroll
   constructor ({
-    wrapper = window,
-    content = document.documentElement,
-    eventsTarget = wrapper,
-    smoothWheel = true,
-    syncTouch = false,
-    syncTouchLerp = 0.075,
-    touchInertiaMultiplier = 35,
-    duration,
-    easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    lerp = 0.1,
-    infinite = false,
-    orientation = 'vertical',
-    gestureOrientation = 'vertical',
-    touchMultiplier = 1,
-    wheelMultiplier = 1,
-    autoResize = true,
-    prevent = false
+    wrapper = window, // Element to use as the scroll container
+    content = document.documentElement, // Element that contains the content that will be scrolled
+    eventsTarget = wrapper, // Element that listens to events
+    smoothWheel = true, // Enable smooth scrolling for mouse wheel events
+    syncTouch = false, // Mimic touch device scroll while allowing scroll sync
+    syncTouchLerp = 0.075, // Lerp applied during syncTouch inertia
+    touchInertiaMultiplier = 35, // Strength of syncTouch inertia
+    duration, // The duration of scroll animation (in seconds)
+    easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Function to use for the scroll animation
+    lerp = 0.1, // Linear interpolation intensity, overrides duration
+    infinite = false, // Infinite scrolling, requires syncTouch on touch devices
+    orientation = 'vertical', // Accepts 'vertical', 'horizontal' or 'both'
+    gestureOrientation = 'vertical', // Accepts either 'vertical' or 'horizontal'
+    touchMultiplier = 1, // Used for touch events
+    wheelMultiplier = 1, // Used for mouse wheel events
+    autoResize = true, // resize instance automatically based on `ResizeObserver`
+    prevent = false // Prevent scroll to be smoothed according to elements traversed by events (node) =>  node.classList.contains('no-smooth-scrolling')
   } = {}) {
     // if wrapper is html or body, fallback to window
     if (!wrapper || wrapper === document.documentElement || wrapper === document.body) {
@@ -53,23 +53,23 @@ export class Odayaka {
     }
 
     this.options = {
-      wrapper, // Element to use as the scroll container
-      content, // Element that contains the content that will be scrolled
-      eventsTarget, // Element that listens to events
-      smoothWheel, // Enable smooth scrolling for mouse wheel events
-      syncTouch, // Mimic touch device scroll while allowing scroll sync
-      syncTouchLerp, // Lerp applied during syncTouch inertia
-      touchInertiaMultiplier, // Strength of syncTouch inertia
-      duration, // The duration of scroll animation (in seconds)
-      easing, // Function to use for the scroll animation
-      lerp, // Linear interpolation intensity, overrides duration
-      infinite, // Infinite scrolling, requires syncTouch on touch devices
-      gestureOrientation, // Accepts 'vertical', 'horizontal' or 'both'
-      orientation, // Accepts either 'vertical' or 'horizontal'
-      touchMultiplier, // Used for touch events
-      wheelMultiplier, // Used for mouse wheel events
-      autoResize, // resize instance automatically based on `ResizeObserver`
-      prevent // Prevent scroll to be smoothed according to elements traversed by events (node) =>  node.classList.contains('no-smooth-scrolling')
+      wrapper,
+      content,
+      eventsTarget,
+      smoothWheel,
+      syncTouch,
+      syncTouchLerp,
+      touchInertiaMultiplier,
+      duration,
+      easing,
+      lerp,
+      infinite,
+      gestureOrientation,
+      orientation,
+      touchMultiplier,
+      wheelMultiplier,
+      autoResize,
+      prevent
     }
 
     this.animate = new Animate()
