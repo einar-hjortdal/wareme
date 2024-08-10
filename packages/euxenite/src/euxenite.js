@@ -794,24 +794,15 @@ if (detectIsUndefined(secret)) {
 await cleanupExpiredSessions()
 const cacheStore = await createNewCacheStore()
 
-// workaround https://github.com/elysiajs/elysia/issues/688
-const wrappedAdminRetrieveHandler = ctx => withSession(ctx, adminRetrieveHandler)
-const wrappedAdminUpdateHandler = ctx => withSession(ctx, adminUpdateHandler)
-const wrappedAdminLogoutHandler = ctx => withSession(ctx, adminLogoutHandler)
-const wrappedFileUploadHandler = ctx => withSession(ctx, fileUploadHandler)
-const wrappedFileUpdateHandler = ctx => withSession(ctx, fileUpdateHandler)
-const wrappedFileDeleteHandler = ctx => withSession(ctx, fileDeleteHandler)
-// workaround end
-
 export const euxenite = new Elysia()
   .decorate('cacheStore', cacheStore)
-  .get('/api/euxenite/auth', ctx => wrappedAdminRetrieveHandler(ctx))
+  .get('/api/euxenite/auth', ctx => withSession(ctx, adminRetrieveHandler))
   .post('/api/euxenite/auth', ctx => adminLoginHandler(ctx))
-  .put('/api/euxenite/auth', ctx => wrappedAdminUpdateHandler(ctx))
-  .delete('/api/euxenite/auth', ctx => wrappedAdminLogoutHandler(ctx))
+  .put('/api/euxenite/auth', ctx => withSession(ctx, adminUpdateHandler))
+  .delete('/api/euxenite/auth', ctx => withSession(ctx, adminLogoutHandler))
   .get('/api/euxenite/files', ctx => fileListHandler(ctx))
-  .post('/api/euxenite/files/:filename', ctx => wrappedFileUploadHandler(ctx))
-  .put('/api/euxenite/files/:id', ctx => wrappedFileUpdateHandler(ctx))
-  .delete('/api/euxenite/files/:id', ctx => wrappedFileDeleteHandler(ctx))
+  .post('/api/euxenite/files/:filename', ctx => withSession(ctx, fileUploadHandler))
+  .put('/api/euxenite/files/:id', ctx => withSession(ctx, fileUpdateHandler))
+  .delete('/api/euxenite/files/:id', ctx => withSession(ctx, fileDeleteHandler))
   // intercept with web server in production
   .get('/_euxenite/*', ctx => serveFileHandler(ctx))
