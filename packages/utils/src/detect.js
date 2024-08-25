@@ -6,7 +6,7 @@ export const detectIsEmptyString = (s) => s === ''
 export const detectIsNaN = (o) => Number.isNaN(o)
 
 export const detectIsPlainObject = (o) => {
-  const isObject = () => Object.prototype.toString.call(o) === '[object Object]'
+  const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]'
 
   if (isObject(o) === false) {
     return false;
