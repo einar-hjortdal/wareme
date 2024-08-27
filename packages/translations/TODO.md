@@ -1,9 +1,52 @@
-- `--external @wareme/event-emitter`?
 - Documentation
   - options for the `t` function
   - better example for `changeLanguage`
   - document `useTranslation` `idPrefix` parameter
   - SSR example
+
+- Add support for `defaultMessage` without `id` prop. This would allow the following changes to codebases: 
+
+Before:
+```js
+// component definition
+PageHeading.Paragraphs = component(({ paragraphsId }) => {
+  return (
+    <ParagraphWrapper>
+      <Translate
+        id={paragraphsId}
+        elements={{ paragraph: chunk => <Paragraph>{chunk}</Paragraph> }}
+      />
+    </ParagraphWrapper>
+  )
+})
+
+// component usage
+<PageHeading>
+  <PageHeading.Title>{t('title')}</PageHeading.Title>
+  <PageHeading.Paragraphs paragraphsId='shop.paragraphs' />
+</PageHeading>
+```
+
+After:
+```js
+// component definition
+PageHeading.Paragraphs = component(({ paragraphs }) => {
+  return (
+    <ParagraphWrapper>
+      <Translate
+        defaultMessage={paragraphs}
+        elements={{ paragraph: chunk => <Paragraph>{chunk}</Paragraph> }}
+      />
+    </ParagraphWrapper>
+  )
+})
+
+// component usage
+<PageHeading>
+  <PageHeading.Title>{t('title')}</PageHeading.Title>
+  <PageHeading.Paragraphs {t('paragraphs')} />
+</PageHeading>
+```
 
 ## SPA functionality
 
