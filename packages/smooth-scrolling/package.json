@@ -1,7 +1,7 @@
 {
   "name": "@wareme/smooth-scrolling",
   "description": "High performance smooth scrolling for Dark applications",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "keywords": [
     "smooth-scrolling",
     "Dark"

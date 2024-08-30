@@ -1,7 +1,7 @@
 {
   "name": "@wareme/currency-input",
   "description": "Easily input currencies in Dark applications",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "keywords": [
     "currency",
     "input",
