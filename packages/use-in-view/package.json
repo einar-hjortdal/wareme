@@ -1,5 +1,5 @@
 {
-  "name": "use-in-view",
+  "name": "@wareme/use-in-view",
   "description": "Wraps the Observer API",
   "version": "3.2.0",
   "keywords": [

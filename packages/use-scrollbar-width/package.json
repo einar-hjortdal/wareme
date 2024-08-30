@@ -1,5 +1,5 @@
 {
-  "name": "use-scrollbar-width",
+  "name": "@wareme/use-scrollbar-width",
   "description": "Determine the scrollbar width of the browser",
   "version": "3.1.0",
   "keywords": [

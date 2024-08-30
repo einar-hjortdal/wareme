@@ -1,0 +1,29 @@
+{
+  "name": "translations-example",
+  "license": "NCSA",
+  "scripts": {
+    "clean:browser": "rm -rf ./build/browser",
+    "clean:server": "rm -rf ./build/server",
+    "clean:all": "rm -rf ./build",
+    "build:browser": "bun build ./src/browser/index.jsx --outdir ./build/browser --splitting",
+    "build:server": "bun build ./src/server/index.jsx --outdir ./build/server --target=bun",
+    "dev:browser": "mkdir -p build/browser && bun run build:browser --watch",
+    "dev:server": "bun run build:server --watch",
+    "dev:start": "while [ ! -f ./build/server/index.js ]; do sleep 0.5; done && bun run --watch ./build/server/index.js",
+    "dev": "bun run clean:all && (bun run dev:browser & pid_browser=$; bun run dev:server & pid_server=$; bun run dev:start & pid_start=$; wait; kill $pid_browser $pid_server $pid_start)"
+  },
+  "dependencies": {
+    "@dark-engine/core": "^1.4.2",
+    "@dark-engine/styled": "^1.4.2",
+    "@dark-engine/platform-browser": "^1.4.2",
+    "@dark-engine/platform-server": "1.4.2",
+    "@dark-engine/web-router": "1.4.2",
+    "@wareme/event-emitter": "workspace:*",
+    "@wareme/utils": "workspace:*",
+    "@wareme/translations": "workspace:*",
+    "elysia": "^1.1.9"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
+  }
+}

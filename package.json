@@ -8,7 +8,8 @@
   "license": "NCSA",
   "scripts": {
     "test": "bun test",
-    "build": "for dir in packages/*; do if [ -d \"$dir\" ]; then echo \"Building $dir\"; (cd \"$dir\" && bun run build); fi; done"
+    "build": "for dir in packages/*; do if [ -d \"$dir\" ]; then echo \"Building $dir\"; (cd \"$dir\" && bun run build); fi; done",
+    "publish": "for dir in packages/*; do if [ -d \"$dir\" ]; then echo \"Publishing $dir\"; (cd \"$dir\" && npm publish --access public); fi; done"
   },
   "workspaces": [
     "packages/*",
