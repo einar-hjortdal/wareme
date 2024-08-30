@@ -8,12 +8,12 @@ let unsupportedValue
 // defaultFallbackInView defines the default behavior if the IntersectionObserver is unsupported.
 // - `undefined`: Throw an error
 // - `true` or `false`: Set the `inView` value to this regardless of intersection state
-export function defaultFallbackInView (inView) {
+export const defaultFallbackInView = (inView) => {
   unsupportedValue = inView
 }
 
 // getRootId generates a unique ID for the root element
-function getRootId (root) {
+const getRootId = (root) => {
   if (detectIsFalsy(root)) {
     return '0'
   }
@@ -29,7 +29,7 @@ function getRootId (root) {
 
 // Convert the options to a string Id, based on the values.
 // Ensures we can reuse the same observer when observing elements with the same options.
-function optionsToId (options) {
+const optionsToId = (options) => {
   const isKeyOfOptions = (key) => {
     return !detectIsUndefined(options[key])
   }
@@ -49,7 +49,7 @@ function optionsToId (options) {
     .toString()
 }
 
-function createObserver (options) {
+const createObserver = (options) => {
   // Create a unique ID for this observer instance, based on the root, root margin and threshold.
   const id = optionsToId(options)
   let instance = observerMap.get(id)
@@ -87,7 +87,7 @@ function createObserver (options) {
   return instance
 }
 
-export function observe (element, callback, options, fallbackInView) {
+export const observe = (element, callback, options, fallbackInView) => {
   if (detectIsUndefined(options)) {
     options = {}
   }

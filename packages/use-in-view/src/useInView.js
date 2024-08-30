@@ -16,7 +16,7 @@ const alwaysString = (stringOrArray) => {
   return stringOrArray
 }
 
-export function useInView (options) {
+export const useInView = (options) => {
   if (detectIsEmpty(options)) {
     options = {}
   }
