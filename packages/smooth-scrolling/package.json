@@ -21,8 +21,8 @@
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.4.1",
-    "@dark-engine/styled": "^1.4.1",
+    "@dark-engine/core": "^1.4.2",
+    "@dark-engine/styled": "^1.4.2",
     "@wareme/raf-nexus": "workspace:*",
     "@wareme/event-emitter": "workspace:*",
     "@wareme/utils": "workspace:*"
