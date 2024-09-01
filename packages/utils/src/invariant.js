@@ -4,7 +4,7 @@ const throwError = (errorMsg) => illegal(errorMsg, 'invariant')
 
 // invariant is meant to be used with Bun's `define`
 // https://bun.sh/guides/runtime/define-constant
-export function invariant (condition, errorMsg) {
+export const invariant = (condition, errorMsg) => {
   if (condition) {
     return
   }

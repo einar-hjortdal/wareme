@@ -5,10 +5,13 @@ export const detectIsEmptyObject = (o) => keys(o).length === 0
 export const detectIsEmptyString = (s) => s === ''
 export const detectIsNaN = (o) => Number.isNaN(o)
 
-export const detectIsPlainObject = (o) => {
-  const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]'
+export const detectIsObjectObject = (obj) => {
+  return Object.prototype.toString.call(obj) === '[object Object]'
+}
 
-  if (isObject(o) === false) {
+export const detectIsPlainObject = (o) => {
+
+  if (detectIsObjectObject(o) === false) {
     return false;
   }
 
@@ -20,7 +23,7 @@ export const detectIsPlainObject = (o) => {
 
   // Has modified prototype?
   const prot = ctor.prototype;
-  if (isObject(prot) === false) {
+  if (detectIsObjectObject(prot) === false) {
     return false;
   }
 
