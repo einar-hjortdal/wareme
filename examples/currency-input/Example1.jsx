@@ -1,8 +1,7 @@
 import { component, useState } from '@dark-engine/core'
 import { CurrencyInput } from '@wareme/currency-input'
 
-
-import { ErrorMessage } from './styles'
+import { ErrorMessage, HalfWidth, Pre } from './styles'
 
 export const Example1 = component(() => {
   const limit = 1000
@@ -54,7 +53,7 @@ export const Example1 = component(() => {
         </ul>
 
         <form>
-          <div>
+          <HalfWidth>
             <label htmlFor='validationCustom01'>Please enter a value (max £1,000)</label>
             <CurrencyInput
               id='validationCustom01'
@@ -67,9 +66,9 @@ export const Example1 = component(() => {
               step={1}
             />
             <ErrorMessage>{errorMessage}</ErrorMessage>
-          </div>
-          <div>
-            <pre>
+          </HalfWidth>
+          <HalfWidth>
+            <Pre>
               <div>
                 <div>onValueChange:</div>
                 {value}
@@ -78,8 +77,8 @@ export const Example1 = component(() => {
                 <div>Values:</div>
                 {JSON.stringify(values, undefined, ' ')}
               </div>
-            </pre>
-          </div>
+            </Pre>
+          </HalfWidth>
         </form>
       </div>
     </div>

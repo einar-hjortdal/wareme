@@ -25,5 +25,16 @@ export const Container = styled.div`
 `
 
 export const ErrorMessage = styled.div`
-color: #cc241d;
+  color: #cc241d;
+`
+
+export const HalfWidth = styled.div`
+  display: inline-block;
+  width: 50%;
+  vertical-align: top;
+`
+
+export const Pre = styled.pre`
+  margin: unset;
+  background-color: #504945;
 `
