@@ -13,7 +13,7 @@
     "@dark-engine/platform-browser": "^1.4.2",
     "@wareme/currency-input": "workspace:*",
     "@wareme/utils": "workspace:*",
-    "elysia": "^1.1.9"
+    "elysia": "^1.1.12"
   },
   "devDependencies": {
     "standard": "^17.1.0"

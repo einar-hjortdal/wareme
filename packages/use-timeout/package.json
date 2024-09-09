@@ -1,12 +1,10 @@
 {
-  "name": "@wareme/euxenite",
-  "description": "Store and manage BLOBs for Dark applications",
-  "version": "3.4.0",
+  "name": "@wareme/use-timeout",
+  "description": "",
+  "version": "3.0.0",
   "keywords": [
     "utils",
-    "Dark",
-    "Elysia",
-    "Bun"
+    "Dark"
   ],
   "author": "Coachonko",
   "repository": "https://github.com/Coachonko/wareme",
@@ -15,14 +13,13 @@
   "scripts": {
     "test": "bun test",
     "clean": "rm -rf ./dist",
-    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core --external elysia",
+    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core",
     "dev": "bun run build --watch"
   },
   "devDependencies": {
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "elysia": "1.1.12",
     "@dark-engine/core": "^1.4.2"
   }
 }

@@ -16,7 +16,7 @@
     "@wareme/event-emitter": "workspace:*",
     "@wareme/utils": "workspace:*",
     "@wareme/smooth-scrolling": "workspace:*",
-    "elysia": "^1.1.9"
+    "elysia": "^1.1.12"
   },
   "devDependencies": {
     "standard": "^17.1.0"
