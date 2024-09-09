@@ -7,7 +7,7 @@ import {
   detectIsEmpty,
   detectIsString,
   detectIsNumber,
-  detectIsNull,
+  detectIsNull
 } from '@dark-engine/core'
 import {
   throwError,
@@ -133,23 +133,26 @@ const CurrencyInput = component(({
     }
 
     if (stringValue === '' || stringValue === '-' || stringValue === decimalSeparator) {
-      onValueChange && onValueChange(undefined, name, { float: null, formatted: '', value: '' })
+      if (onValueChange) {
+        onValueChange(undefined, name, { float: null, formatted: '', value: '' })
+      }
+
       setStateValue(stringValue)
       // Always sets cursor after '-' or decimalSeparator input
       setCursor(1)
       return
     }
 
-    const getStringValueWithoutSeparator = () => {
+    const getStringValueWithoutCustomSeparator = () => {
       if (decimalSeparator) {
         return stringValue.replace(decimalSeparator, '.')
       }
       return stringValue
     }
 
-    const stringValueWithoutSeparator = getStringValueWithoutSeparator()
+    const stringValueWithoutCustomSeparator = getStringValueWithoutCustomSeparator()
 
-    const numberValue = parseFloat(stringValueWithoutSeparator)
+    const numberValue = parseFloat(stringValueWithoutCustomSeparator)
 
     const formattedValue = formatValue({
       value: stringValue,
@@ -192,7 +195,9 @@ const CurrencyInput = component(({
 
     processChange(value, selectionStart)
 
-    onInput && onInput(event)
+    if (onInput) {
+      onInput(event)
+    }
   }
 
   const handleOnFocus = (event) => {
@@ -213,7 +218,9 @@ const CurrencyInput = component(({
 
     if (valueOnly === '-' || valueOnly === decimalSeparator || !valueOnly) {
       setStateValue('')
-      onBlur && onBlur(event)
+      if (onBlur) {
+        onBlur(event)
+      }
       return
     }
 
@@ -336,7 +343,9 @@ const CurrencyInput = component(({
       }
     }
 
-    onKeyUp && onKeyUp(event)
+    if (onKeyUp) {
+      onKeyUp(event)
+    }
   }
 
   useEffect(() => {

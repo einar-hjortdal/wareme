@@ -1,34 +1,34 @@
-import { component, useReducer } from '@dark-engine/core';
-import { CurrencyInput, formatValue } from '@wareme/currency-input';
-import { detectIsNaN } from '@wareme/utils/src';
+import { component, useReducer } from '@dark-engine/core'
+import { CurrencyInput, formatValue } from '@wareme/currency-input'
+import { detectIsNaN } from '@wareme/utils/src'
 
 const reducer = (state, { fieldName, value }) => {
   return {
     ...state,
-    [fieldName]: value,
-  };
+    [fieldName]: value
+  }
 }
 
 const initialState = {
   field1: {
     value: 100,
     validationClass: '',
-    errorMessage: '',
+    errorMessage: ''
   },
   field2: {
     value: 200,
     validationClass: '',
-    errorMessage: '',
-  },
-};
+    errorMessage: ''
+  }
+}
 
 export const Example4 = component(() => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const prefix = '£';
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const prefix = '£'
 
   const handleOnValueChange = (_value, fieldName) => {
     if (!fieldName) {
-      return;
+      return
     }
 
     if (!_value) {
@@ -37,12 +37,12 @@ export const Example4 = component(() => {
         value: {
           value: undefined,
           validationClass: '',
-          errorMessage: '',
-        },
-      });
+          errorMessage: ''
+        }
+      })
     }
 
-    const value = Number(_value);
+    const value = Number(_value)
 
     if (detectIsNaN(value)) {
       return dispatch({
@@ -50,9 +50,9 @@ export const Example4 = component(() => {
         value: {
           value,
           validationClass: 'is-invalid',
-          errorMessage: 'Please enter a valid number',
-        },
-      });
+          errorMessage: 'Please enter a valid number'
+        }
+      })
     }
 
     return dispatch({
@@ -60,29 +60,29 @@ export const Example4 = component(() => {
       value: {
         value,
         validationClass: 'is-valid',
-        errorMessage: '',
-      },
-    });
-  };
+        errorMessage: ''
+      }
+    })
+  }
 
-  const total = state.field1.value + state.field2.value;
+  const total = state.field1.value + state.field2.value
 
   return (
-    <div >
-      <div >
+    <div>
+      <div>
         <h2>Example 4</h2>
         <ul>
           <li>Add two values together</li>
           <li>Format the total value</li>
         </ul>
 
-        <form >
-          <div >
-            <div >
-              <label htmlFor="validation-example-3-field1">Value 1</label>
+        <form>
+          <div>
+            <div>
+              <label htmlFor='validation-example-3-field1'>Value 1</label>
               <CurrencyInput
-                id="validation-example-3-field1"
-                name="field1"
+                id='validation-example-3-field1'
+                name='field1'
                 className={state.field1.validationClass}
                 value={state.field1.value}
                 onValueChange={handleOnValueChange}
@@ -92,10 +92,10 @@ export const Example4 = component(() => {
             </div>
 
             <div>
-              <label htmlFor="validation-example-3-field2">Value 2</label>
+              <label htmlFor='validation-example-3-field2'>Value 2</label>
               <CurrencyInput
-                id="validation-example-3-field2"
-                name="field2"
+                id='validation-example-3-field2'
+                name='field2'
                 className={state.field2.validationClass}
                 value={state.field2.value}
                 onValueChange={handleOnValueChange}
@@ -104,8 +104,8 @@ export const Example4 = component(() => {
               <div>{state.field2.errorMessage}</div>
             </div>
 
-            <div >
-              <div >
+            <div>
+              <div>
                 <label>Total:</label>
                 <div>
                   <h3>{formatValue({ prefix, value: String(total) })}</h3>
@@ -116,7 +116,7 @@ export const Example4 = component(() => {
         </form>
       </div>
     </div>
-  );
+  )
 })
 
-export default Example4;
+export default Example4

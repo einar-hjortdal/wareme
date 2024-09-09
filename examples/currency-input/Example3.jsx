@@ -1,44 +1,44 @@
-import { component, useState } from '@dark-engine/core';
-import { CurrencyInput } from '@wareme/currency-input';
+import { component, useState } from '@dark-engine/core'
+import { CurrencyInput } from '@wareme/currency-input'
 
 const options = [
   {
     locale: 'de-DE',
-    currency: 'EUR',
+    currency: 'EUR'
   },
   {
     locale: 'en-US',
-    currency: 'USD',
+    currency: 'USD'
   },
   {
     locale: 'en-GB',
-    currency: 'GBP',
+    currency: 'GBP'
   },
   {
     locale: 'ja-JP',
-    currency: 'JPY',
+    currency: 'JPY'
   },
   {
     locale: 'en-IN',
-    currency: 'INR',
-  },
-];
+    currency: 'INR'
+  }
+]
 
 export const Example3 = component(() => {
-  const [intlConfig, setIntlConfig] = useState(options[0]);
-  const [value, setValue] = useState('123');
+  const [intlConfig, setIntlConfig] = useState(options[0])
+  const [value, setValue] = useState('123')
 
   const handleOnValueChange = (value) => {
-    setValue(value);
-  };
+    setValue(value)
+  }
 
   const handleIntlSelect = (event) => {
-    const config = options[Number(event.target.value)];
+    const config = options[Number(event.target.value)]
     if (config) {
-      setIntlConfig(config);
-      setValue('123');
+      setIntlConfig(config)
+      setValue('123')
     }
-  };
+  }
 
   return (
     <div>
@@ -47,45 +47,45 @@ export const Example3 = component(() => {
         <li>Intl config</li>
       </ul>
 
-      <div >
-        <div >
+      <div>
+        <div>
           <CurrencyInput
-            id="validationCustom04"
-            name="input-1"
+            id='validationCustom04'
+            name='input-1'
             intlConfig={intlConfig}
-            className={`form-control`}
+            className='form-control'
             onValueChange={handleOnValueChange}
             decimalsLimit={6}
             value={value}
             step={1}
           />
         </div>
-        <div >
-          <label htmlFor="intlConfigSelect">Intl option</label>
-          <select id="intlConfigSelect" onChange={handleIntlSelect}>
+        <div>
+          <label htmlFor='intlConfigSelect'>Intl option</label>
+          <select id='intlConfigSelect' onChange={handleIntlSelect}>
             {options.map((config, i) => {
               if (config) {
-                const { locale, currency } = config;
+                const { locale, currency } = config
                 return (
                   <option key={`${locale}${currency}`} value={i}>
                     {locale}
                   </option>
-                );
+                )
               }
             })}
           </select>
         </div>
-        <div >
+        <div>
           <pre>
-            <div >onValueChange:</div>
+            <div>onValueChange:</div>
             {value}
-            <div >intlConfig:</div>
+            <div>intlConfig:</div>
             {JSON.stringify(intlConfig)}
           </pre>
         </div>
       </div>
     </div>
-  );
+  )
 })
 
-export default Example3;
+export default Example3

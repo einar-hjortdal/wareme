@@ -1,32 +1,13 @@
 import { component } from '@dark-engine/core'
-import { styled, createGlobalStyle } from '@dark-engine/styled'
 import { createRoot } from '@dark-engine/platform-browser'
+
+import { GlobalStyle, Container } from './styles'
 
 import Example1 from './Example1'
 import Example2 from './Example2'
 import Example3 from './Example3'
 import Example4 from './Example4'
 import Example5 from './Example5'
-
-const GlobalStyle = createGlobalStyle`
-  body {
-    margin: 0;
-    color: #ebdbb2;
-    background-color: #1d2021;
-    font-family: 'monospace';
-    line-height: 1.5;
-  }
-
-  input,
-  select {
-    font-family: inherit;
-    font-size: inherit;
-  }
-`
-
-const Container = styled.div`
-  padding: 3rem;
-`
 
 const App = component(() => {
   return (
