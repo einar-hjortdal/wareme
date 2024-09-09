@@ -1,6 +1,8 @@
 import { component, useReducer } from '@dark-engine/core'
 import { CurrencyInput, formatValue } from '@wareme/currency-input'
-import { detectIsNaN } from '@wareme/utils/src'
+import { detectIsNaN } from '@wareme/utils'
+
+import { ErrorMessage } from './styles'
 
 const reducer = (state, { fieldName, value }) => {
   return {
@@ -88,7 +90,7 @@ export const Example4 = component(() => {
                 onValueChange={handleOnValueChange}
                 prefix={prefix}
               />
-              <div>{state.field1.errorMessage}</div>
+              <ErrorMessage>{state.field1.errorMessage}</ErrorMessage>
             </div>
 
             <div>
@@ -101,16 +103,12 @@ export const Example4 = component(() => {
                 onValueChange={handleOnValueChange}
                 prefix={prefix}
               />
-              <div>{state.field2.errorMessage}</div>
+              <ErrorMessage>{state.field2.errorMessage}</ErrorMessage>
             </div>
 
             <div>
-              <div>
-                <label>Total:</label>
-                <div>
-                  <h3>{formatValue({ prefix, value: String(total) })}</h3>
-                </div>
-              </div>
+              Total:
+              <div>{formatValue({ prefix, value: String(total) })}</div>
             </div>
           </div>
         </form>

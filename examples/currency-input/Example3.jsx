@@ -1,6 +1,8 @@
 import { component, useState } from '@dark-engine/core'
 import { CurrencyInput } from '@wareme/currency-input'
 
+import { HalfWidth, Pre } from './styles'
+
 const options = [
   {
     locale: 'de-DE',
@@ -48,41 +50,43 @@ export const Example3 = component(() => {
       </ul>
 
       <div>
-        <div>
-          <CurrencyInput
-            id='validationCustom04'
-            name='input-1'
-            intlConfig={intlConfig}
-            className='form-control'
-            onValueChange={handleOnValueChange}
-            decimalsLimit={6}
-            value={value}
-            step={1}
-          />
-        </div>
-        <div>
-          <label htmlFor='intlConfigSelect'>Intl option</label>
-          <select id='intlConfigSelect' onChange={handleIntlSelect}>
-            {options.map((config, i) => {
-              if (config) {
-                const { locale, currency } = config
-                return (
-                  <option key={`${locale}${currency}`} value={i}>
-                    {locale}
-                  </option>
-                )
-              }
-            })}
-          </select>
-        </div>
-        <div>
-          <pre>
+        <HalfWidth>
+          <div>
+            <CurrencyInput
+              id='validationCustom04'
+              name='input-1'
+              intlConfig={intlConfig}
+              className='form-control'
+              onValueChange={handleOnValueChange}
+              decimalsLimit={6}
+              value={value}
+              step={1}
+            />
+          </div>
+          <div>
+            <label htmlFor='intlConfigSelect'>Intl option</label>
+            <select id='intlConfigSelect' onChange={handleIntlSelect}>
+              {options.map((config, i) => {
+                if (config) {
+                  const { locale, currency } = config
+                  return (
+                    <option key={`${locale}${currency}`} value={i}>
+                      {locale}
+                    </option>
+                  )
+                }
+              })}
+            </select>
+          </div>
+        </HalfWidth>
+        <HalfWidth>
+          <Pre>
             <div>onValueChange:</div>
             {value}
             <div>intlConfig:</div>
             {JSON.stringify(intlConfig)}
-          </pre>
-        </div>
+          </Pre>
+        </HalfWidth>
       </div>
     </div>
   )
