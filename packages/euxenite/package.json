@@ -15,7 +15,7 @@
   "scripts": {
     "test": "bun test",
     "clean": "rm -rf ./dist",
-    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --minify --sourcemap=external --external @dark-engine/core --external elysia",
+    "build": "bun run clean && bun build ./src/index.js --outdir ./dist --target=bun --minify --sourcemap=external --external @dark-engine/core --external elysia",
     "dev": "bun run build --watch"
   },
   "devDependencies": {
