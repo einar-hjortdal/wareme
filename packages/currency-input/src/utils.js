@@ -12,28 +12,28 @@ export const throwError = (msg) => illegal(msg, 'currency-input')
 
 export const isNumber = (input) => /\d/gi.test(input)
 
-export const addSeparators = (value/* : string */, separator = ',')/* : string */ => {
+export const addSeparators = (value/*: string */, separator = ',')/*: string */ => {
   return value.replace(/\B(?=(\d{3})+(?!\d))/g, separator)
 }
 
 // https://stackoverflow.com/questions/17885855/use-dynamic-variable-string-as-regex-pattern-in-javascript
-export const escapeRegExp = (stringToGoIntoTheRegex/* : string */)/* : string */ => {
+export const escapeRegExp = (stringToGoIntoTheRegex/*: string */)/*: string */ => {
   return stringToGoIntoTheRegex.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
 }
 
-export const removeSeparators = (value/* : string */, separator = ',')/* : string */ => {
+export const removeSeparators = (value/*: string */, separator = ',')/*: string */ => {
   const reg = new RegExp(escapeRegExp(separator), 'g')
   return value.replace(reg, '')
 }
 
-export const removeInvalidChars = (value/* : string */, validChars/* : Array<string> */)/* : string */ => {
+export const removeInvalidChars = (value/*: string */, validChars/*: Array<string> */)/*: string */ => {
   const chars = escapeRegExp(validChars.join(''))
   const reg = new RegExp(`[^\\d${chars}]`, 'gi')
   return value.replace(reg, '')
 }
 
 // https://stackoverflow.com/a/9345181
-export const abbrValue = (value/* : number */, decimalSeparator = '.', _decimalPlaces = 10)/* : string */ => {
+export const abbrValue = (value/*: number */, decimalSeparator = '.', _decimalPlaces = 10)/*: string */ => {
   if (value > 999) {
     let valueLength = ('' + value).length
     const p = Math.pow
@@ -56,7 +56,7 @@ const abbreviationsMap = {
 /**
  * Parse a value with abbreviation e.g 1k = 1000
  */
-export const parseAbbrValue = (value/* : string */, decimalSeparator = '.')/* : string | null */ => {
+export const parseAbbrValue = (value/*: string */, decimalSeparator = '.')/*: string | null */ => {
   const reg = new RegExp(`(\\d+(${escapeRegExp(decimalSeparator)}\\d*)?)([kmb])$`, 'i')
   const match = value.match(reg)
 
@@ -162,10 +162,10 @@ export const cleanValue = ({
 }
 
 export const fixedDecimalValue = (
-  value/* : string */,
-  decimalSeparator/* : string */,
-  fixedDecimalLength/* : number */
-)/* : string */ => {
+  value/*: string */,
+  decimalSeparator/*: string */,
+  fixedDecimalLength/*: number */
+)/*: string */ => {
   if (detectIsNumber(fixedDecimalLength) && value.length > 1) {
     if (fixedDecimalLength === 0) {
       return value.replace(decimalSeparator, '')
@@ -203,7 +203,7 @@ export const fixedDecimalValue = (
 }
 
 export const getSuffix = (
-  value/* : string */,
+  value/*: string */,
   { groupSeparator = ',', decimalSeparator = '.' }
 ) => {
   const suffixRegex = new RegExp(
@@ -263,13 +263,13 @@ export const getLocaleConfig = (intlConfig) => {
 /**
  * Format value with decimal separator, group separator and prefix
  */
-export const formatValue = (options)/* : string */ => {
+export const formatValue = (options)/*: string */ => {
   const {
     value: _value,
     decimalSeparator,
     intlConfig,
     decimalScale,
-    prefix = '',
+    prefix,
     suffix = ''
   } = options
 
@@ -281,18 +281,31 @@ export const formatValue = (options)/* : string */ => {
     return '-'
   }
 
-  const isNegative = new RegExp(`^\\d?-${prefix ? `${escapeRegExp(prefix)}?` : ''}\\d`).test(
-    _value
-  )
-
-  let value =
-    decimalSeparator !== '.'
-      ? replaceDecimalSeparator(_value, decimalSeparator, isNegative)
-      : _value
-
-  if (decimalSeparator && decimalSeparator !== '-' && value.startsWith(decimalSeparator)) {
-    value = '0' + value
+  const getPrefix = () => {
+    if (detectIsEmpty(prefix)) {
+      return ''
+    }
+    return `${escapeRegExp(prefix)}?`
   }
+  const isNegative = new RegExp(`^\\d?-${getPrefix()}\\d`).test(_value)
+
+  // replace custom decimal separator if needed
+  const getValueWithoutDecimalSeparator = () => {
+    if (decimalSeparator !== '.') {
+      return replaceDecimalSeparator(_value, decimalSeparator, isNegative)
+    }
+    return _value
+  }
+  const valueWithoutDecimalSeparator = getValueWithoutDecimalSeparator()
+
+  // add leading zero if needed
+  const getValueWithLeadingZero = () => {
+    if (decimalSeparator && decimalSeparator !== '-' && valueWithoutDecimalSeparator.startsWith(decimalSeparator)) {
+      return `0${valueWithoutDecimalSeparator}`
+    }
+    return valueWithoutDecimalSeparator
+  }
+  const value = getValueWithLeadingZero()
 
   const defaultNumberFormatOptions = {
     minimumFractionDigits: decimalScale || 0,
@@ -304,10 +317,10 @@ export const formatValue = (options)/* : string */ => {
       intlConfig.locale,
       intlConfig.currency
         ? {
-          ...defaultNumberFormatOptions,
-          style: 'currency',
-          currency: intlConfig.currency
-        }
+            ...defaultNumberFormatOptions,
+            style: 'currency',
+            currency: intlConfig.currency
+          }
         : defaultNumberFormatOptions
     )
     : new Intl.NumberFormat(undefined, defaultNumberFormatOptions)
@@ -321,7 +334,6 @@ export const formatValue = (options)/* : string */ => {
 
   // Include decimal separator if user input ends with decimal separator
   const includeDecimalSeparator = _value.slice(-1) === decimalSeparator ? decimalSeparator : ''
-
 
   const getDecimals = () => {
     const regex = /\d+\.(\d+)/
@@ -370,18 +382,18 @@ export const formatValue = (options)/* : string */ => {
  * Before converting to Number, decimal separator has to be .
  */
 const replaceDecimalSeparator = (
-  value/* : string */,
+  value/*: string */,
   decimalSeparator,
-  isNegative/* : boolean */
-)/* : string */ => {
-  let newValue = value
+  isNegative/*: boolean */
+)/*: string */ => {
   if (decimalSeparator && decimalSeparator !== '.') {
-    newValue = newValue.replace(RegExp(escapeRegExp(decimalSeparator), 'g'), '.')
+    const newValue = value.replace(RegExp(escapeRegExp(decimalSeparator), 'g'), '.')
     if (isNegative && decimalSeparator === '-') {
-      newValue = `-${newValue.slice(1)}`
+      return `-${newValue.slice(1)}`
     }
+    return newValue
   }
-  return newValue
+  return value
 }
 
 const replaceParts = (
@@ -392,7 +404,7 @@ const replaceParts = (
     decimalSeparator,
     decimalScale,
     disableGroupSeparators = false
-  })/* : string */ => {
+  })/*: string */ => {
   return parts
     .reduce(
       (prev, { type, value }, i) => {
@@ -450,10 +462,10 @@ const replaceParts = (
 }
 
 export const padTrimValue = (
-  value/* : string | undefined */,
+  value/*: string | undefined */,
   decimalSeparator = '.',
-  decimalScale/* : number | undefined */
-)/* : string */ => {
+  decimalScale/*: number | undefined */
+)/*: string */ => {
   if (detectIsUndefined(decimalScale) || value === '' || detectIsUndefined(value)) {
     return value
   }
@@ -485,10 +497,10 @@ export const padTrimValue = (
 export const repositionCursor = ({
   selectionStart/*: number | null | undefined */,
   value/*: number  */,
-  lastKeyStroke/* : string | null */,
-  stateValue/* : string | undefined */,
-  groupSeparator/* : string | undefined */
-}) /* {  modifiedValue: string  cursorPosition: number | null | undefined} */ => {
+  lastKeyStroke/*: string | null */,
+  stateValue/*: string | undefined */,
+  groupSeparator/*: string | undefined */
+}) /* { modifiedValue: string  cursorPosition: number | null | undefined} */ => {
   let cursorPosition = selectionStart
   let modifiedValue = value
   if (stateValue && cursorPosition) {
