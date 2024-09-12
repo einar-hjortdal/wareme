@@ -1,3 +1,0 @@
-- Do not return undefined
-- remove default parameter values in function definitions
-- remove renamed parameters
