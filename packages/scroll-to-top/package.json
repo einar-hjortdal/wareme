@@ -1,15 +1,15 @@
 {
   "name": "@wareme/scroll-to-top",
   "description": "Scroll to top on when pathname changes",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "keywords": [
     "util",
     "scroll",
     "route",
     "pathname"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

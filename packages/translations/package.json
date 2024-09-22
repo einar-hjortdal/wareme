@@ -1,7 +1,7 @@
 {
   "name": "@wareme/translations",
   "description": "Translate Dark applications",
-  "version": "3.11.1",
+  "version": "3.11.2",
   "keywords": [
     "i18n",
     "l10n",
@@ -14,8 +14,8 @@
     "icu",
     "Dark"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

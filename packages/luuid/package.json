@@ -1,7 +1,7 @@
 {
   "name": "@wareme/luuid",
   "description": "lexicographically sortable UUID implementation",
-  "version": "3.3.0",
+  "version": "3.4.1",
   "keywords": [
     "luuid"
   ],
@@ -11,8 +11,8 @@
   "cpu": [
     "x64"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "build/index.js",
   "scripts": {

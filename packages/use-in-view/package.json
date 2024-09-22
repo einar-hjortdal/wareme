@@ -1,15 +1,15 @@
 {
   "name": "@wareme/use-in-view",
   "description": "Wraps the Observer API",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "keywords": [
     "Dark",
     "intersection",
     "observer",
     "intersection observer"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

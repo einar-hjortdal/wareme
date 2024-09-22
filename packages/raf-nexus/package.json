@@ -1,14 +1,14 @@
 {
   "name": "@wareme/raf-nexus",
   "description": "Centralize requestAnimationFrame in Dark applications",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "keywords": [
     "requestAnimationFrame",
     "raf",
     "Dark"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

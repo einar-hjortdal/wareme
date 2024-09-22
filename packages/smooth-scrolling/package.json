@@ -1,13 +1,13 @@
 {
   "name": "@wareme/smooth-scrolling",
   "description": "High performance smooth scrolling for Dark applications",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "keywords": [
     "smooth-scrolling",
     "Dark"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

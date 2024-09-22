@@ -1,15 +1,15 @@
 {
   "name": "@wareme/euxenite",
   "description": "Store and manage BLOBs for Dark applications",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "keywords": [
     "utils",
     "Dark",
     "Elysia",
     "Bun"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

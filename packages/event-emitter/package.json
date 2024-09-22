@@ -1,14 +1,14 @@
 {
   "name": "@wareme/event-emitter",
   "description": "High performance event emitter for Dark projects",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "keywords": [
     "Dark",
     "events",
     "eventemitter"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

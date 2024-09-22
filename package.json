@@ -3,8 +3,8 @@
   "description": "Utilities for Dark projects",
   "private": true,
   "type": "module",
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "scripts": {
     "test": "bun test",

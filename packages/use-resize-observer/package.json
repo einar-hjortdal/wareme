@@ -1,13 +1,13 @@
 {
   "name": "@wareme/use-resize-observer",
   "description": "ResizeObserver wrapper for Dark applications",
-  "version": "3.10.0",
+  "version": "3.10.1",
   "keywords": [
     "ResizeObserver",
     "Dark"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

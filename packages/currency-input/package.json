@@ -1,14 +1,14 @@
 {
   "name": "@wareme/currency-input",
   "description": "Easily input currencies in Dark applications",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "keywords": [
     "currency",
     "input",
     "Dark"
   ],
-  "author": "Coachonko",
-  "repository": "https://github.com/Coachonko/wareme",
+  "author": "Einar Hjortdal",
+  "repository": "https://github.com/einar-hjortdal/wareme",
   "license": "NCSA",
   "main": "dist/index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 # LUUID
 
-Wraps [Coachonko/lexical_uuid](https://github.com/Coachonko/lexical_uuid) for use with Bun.
+Wraps [einar-hjortdal/lexical_uuid](https://github.com/einar-hjortdal/lexical_uuid) for use with Bun.
 
 The binary is built for Linux x64.
 

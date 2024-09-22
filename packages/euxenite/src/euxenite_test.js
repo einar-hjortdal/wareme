@@ -35,14 +35,14 @@ const cleanup = async () => await rm(privateDirectory, { recursive: true, force:
 
 const sampleCatalog = {
   admin: {
-    email: 'info@coachonko.com',
+    email: 'einar.hjortdal@outlook.com',
     passwordHash: ''
   },
   files: {
     'some-data': {}
   }
 }
-const updatedCatalog = { ...sampleCatalog, admin: { email: 'new_email@coachonko.com' } }
+const updatedCatalog = { ...sampleCatalog, admin: { email: 'new_email@outlook.com' } }
 
 describe('euxenite', () => {
   beforeEach(async () => { await cleanup() })
