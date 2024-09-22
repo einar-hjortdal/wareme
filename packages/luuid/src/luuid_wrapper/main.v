@@ -2,7 +2,7 @@ module main
 
 import os
 import json
-import coachonko.luuid
+import einar_hjortdal.luuid
 
 fn handle_args(args []string) !string {
 	len := args.len
