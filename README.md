@@ -1,3 +1,3 @@
 # wareme
 
-Utilities for Dark projects
+Utilities for [dark](https://github.com/atellmer/dark)

@@ -13,15 +13,15 @@
     "dev": "bun run clean:all && (bun run dev:browser & pid_browser=$; bun run dev:server & pid_server=$; bun run dev:start & pid_start=$; wait; kill $pid_browser $pid_server $pid_start)"
   },
   "dependencies": {
-    "@dark-engine/core": "^1.4.2",
-    "@dark-engine/styled": "^1.4.2",
-    "@dark-engine/platform-browser": "^1.4.2",
-    "@dark-engine/platform-server": "^1.4.2",
-    "@dark-engine/web-router": "^1.4.2",
+    "@dark-engine/core": "^1.5.0",
+    "@dark-engine/styled": "^1.5.0",
+    "@dark-engine/platform-browser": "^1.5.0",
+    "@dark-engine/platform-server": "^1.5.0",
+    "@dark-engine/web-router": "^1.5.0",
     "@wareme/event-emitter": "workspace:*",
     "@wareme/utils": "workspace:*",
     "@wareme/translations": "workspace:*",
-    "elysia": "^1.1.12"
+    "elysia": "^1.2.10"
   },
   "devDependencies": {
     "standard": "^17.1.0"

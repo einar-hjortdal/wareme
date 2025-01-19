@@ -27,10 +27,10 @@
   },
   "devDependencies": {
     "standard": "^17.1.0",
-    "@dark-engine/platform-server": "^1.4.2"
+    "@dark-engine/platform-server": "^1.5.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.4.2",
+    "@dark-engine/core": "^1.5.0",
     "@wareme/event-emitter": "workspace:*"
   }
 }

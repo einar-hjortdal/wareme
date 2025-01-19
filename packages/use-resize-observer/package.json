@@ -21,7 +21,7 @@
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.4.2",
+    "@dark-engine/core": "^1.5.0",
     "@wareme/utils": "workspace:*"
   }
 }
