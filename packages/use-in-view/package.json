@@ -1,7 +1,7 @@
 {
   "name": "@wareme/use-in-view",
   "description": "Wraps the Observer API",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "keywords": [
     "Dark",
     "intersection",
@@ -22,6 +22,6 @@
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.5.0"
+    "@dark-engine/core": "^1.5.1"
   }
 }

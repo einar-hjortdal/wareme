@@ -1,4 +1,4 @@
-import { component, useState } from '@dark-engine/core'
+import { component, useState, stringify } from '@dark-engine/core'
 import { CurrencyInput } from '@wareme/currency-input'
 
 import { HalfWidth, Pre } from './styles'
@@ -84,7 +84,7 @@ export const Example3 = component(() => {
             <div>onValueChange:</div>
             {value}
             <div>intlConfig:</div>
-            {JSON.stringify(intlConfig)}
+            {stringify(intlConfig)}
           </Pre>
         </HalfWidth>
       </div>

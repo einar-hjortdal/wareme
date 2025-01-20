@@ -6,6 +6,7 @@ import {
   useState,
   createContext,
   useContext,
+  stringify,
   detectIsEmpty
 } from '@dark-engine/core'
 import { useRafNexus } from '@wareme/raf-nexus'
@@ -114,7 +115,7 @@ export const SmoothScrollingProvider = component(({
       odayaka.destroy()
       setOdayaka(null)
     }
-  }, [root, JSON.stringify(options)])
+  }, [root, stringify(options)])
 
   useEffect(() => {
     if (odayaka === null || autoRaf === false) {

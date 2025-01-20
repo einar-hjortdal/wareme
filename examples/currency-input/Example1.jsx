@@ -1,4 +1,4 @@
-import { component, useState } from '@dark-engine/core'
+import { component, useState, stringify } from '@dark-engine/core'
 import { CurrencyInput } from '@wareme/currency-input'
 
 import { ErrorMessage, HalfWidth, Pre } from './styles'
@@ -74,7 +74,7 @@ export const Example1 = component(() => {
             </div>
             <div>
               <div>Values:</div>
-              {JSON.stringify(values, undefined, ' ')}
+              {stringify(values, undefined, ' ')}
             </div>
           </Pre>
         </HalfWidth>

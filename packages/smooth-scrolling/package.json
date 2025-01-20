@@ -1,7 +1,7 @@
 {
   "name": "@wareme/smooth-scrolling",
   "description": "High performance smooth scrolling for Dark applications",
-  "version": "3.5.2",
+  "version": "3.6.0",
   "keywords": [
     "smooth-scrolling",
     "Dark"
@@ -21,8 +21,8 @@
     "standard": "^17.1.0"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.5.0",
-    "@dark-engine/styled": "^1.5.0",
+    "@dark-engine/core": "^1.5.1",
+    "@dark-engine/styled": "^1.5.1",
     "@wareme/raf-nexus": "workspace:*",
     "@wareme/event-emitter": "workspace:*",
     "@wareme/utils": "workspace:*"

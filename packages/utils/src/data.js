@@ -1,8 +1,8 @@
-import { keys } from "@dark-engine/core"
+import { keys, stringify } from "@dark-engine/core"
 import { detectIsPlainObject } from "./detect"
 
 export const hashKey = (queryKey) => {
-  return JSON.stringify(queryKey, (_key, val) => {
+  return stringify(queryKey, (_key, val) => {
     if (detectIsPlainObject(val)) {
       keys(val).sort().reduce((result, key) => {
         result[key] = val[key]
