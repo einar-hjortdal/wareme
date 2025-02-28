@@ -10,7 +10,7 @@ export class TranslationError extends Error {
   id/*: string */
   language/*: string */
 
-  constructor(id /*: string */, language /*: string */) {
+  constructor (id /*: string */, language /*: string */) {
     super(formatErrorMsg(`Translation failed. id: ${id} language: ${language}`, LIB))
     this.id = id
     this.language = language
@@ -33,7 +33,7 @@ export class Translator {
   currentMessages/*: {[string]: string} */
   languageChangeEvents
 
-  constructor(lang/*: string */, messages/*: {[string]: string} */, onError/*: (error: TranslationError)=>void */) {
+  constructor (lang/*: string */, messages/*: {[string]: string} */, onError/*: (error: TranslationError)=>void */) {
     this.currentLanguage = lang
 
     if (detectIsEmpty(messages)) {
@@ -85,6 +85,10 @@ export class Translator {
 
   formatNumber = (value/*: number */, options/*: FormatMessageOptions */)/*: string */ => {
     return new Intl.NumberFormat(this.currentLanguage, options).format(value)
+  }
+
+  formatName = (value/*: string */, options) => {
+    return new Intl.DisplayNames(this.currentLanguage, options).of(value)
   }
 
   #getMessage = (id/*: string */, options/*: ?FormatMessageOptions */, language /*: ?string */) /*: string | void */ => {
