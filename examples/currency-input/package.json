@@ -9,14 +9,14 @@
     "dev": "bun run clean && (bun run dev:browser & pid_browser=$; bun run dev:server & pid_server=$; wait; kill $pid_browser $pid_server)"
   },
   "dependencies": {
-    "@dark-engine/core": "^1.5.1",
-    "@dark-engine/platform-browser": "^1.5.1",
-    "@dark-engine/styled": "^1.5.1",
+    "@dark-engine/core": "^1.6.0",
+    "@dark-engine/platform-browser": "^1.6.0",
+    "@dark-engine/styled": "^1.6.0",
     "@wareme/currency-input": "workspace:*",
     "@wareme/utils": "workspace:*",
-    "elysia": "^1.2.10"
+    "elysia": "^1.4.10"
   },
   "devDependencies": {
-    "standard": "^17.1.0"
+    "standard": "^17.1.2"
   }
 }

@@ -99,11 +99,11 @@ const CurrencyInput = component(({
   }
 
   const getInitialStateValue = () => {
-    if (detectIsString(defaultValue)) {
-      return formatValue({ ...formatValueOptions, decimalScale, value: defaultValue })
+    if (detectIsString(defaultValue) || detectIsNumber(defaultValue)) {
+      return formatValue({ ...formatValueOptions, decimalScale, value: String(defaultValue) })
     }
-    if (detectIsString(userValue)) {
-      return formatValue({ ...formatValueOptions, decimalScale, value: userValue })
+    if (!detectIsNull(userValue) || detectIsNumber(defaultValue)) {
+      return formatValue({ ...formatValueOptions, decimalScale, value: String(userValue) })
     }
     return ''
   }
@@ -188,16 +188,19 @@ const CurrencyInput = component(({
       }
       onValueChange(stringValue, name, values)
     }
+
+    return formattedValue
   }
 
   const handleOnInput = (event) => {
     const { value, selectionStart } = event.target
-
-    processChange(value, selectionStart)
+    const newValue = processChange(value, selectionStart) || ''
 
     if (onInput) {
       onInput(event)
     }
+
+    return newValue // https://github.com/atellmer/dark/pull/99
   }
 
   const handleOnFocus = (event) => {

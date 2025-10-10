@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from '@dark-engine/core'
 import { debounce } from '@wareme/utils'
 
-export function useResizeObserver ({
+export const useResizeObserver = ({
   lazy = false,
   debounce: debounceDelay = 500,
   box = 'border-box',
   callback = () => { },
-} = {}) {
+} = {}) => {
   const entryRef = useRef({})
   const [entry, setEntry] = useState({})
   const [element, setElement] = useState()

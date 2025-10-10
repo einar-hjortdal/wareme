@@ -1,7 +1,7 @@
 {
   "name": "@wareme/currency-input",
   "description": "Easily input currencies in Dark applications",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "keywords": [
     "currency",
     "input",
@@ -18,10 +18,10 @@
     "dev": "bun run build --watch"
   },
   "devDependencies": {
-    "standard": "^17.1.0"
+    "standard": "^17.1.2"
   },
   "peerDependencies": {
-    "@dark-engine/core": "^1.5.1",
+    "@dark-engine/core": "^1.6.0",
     "@wareme/utils": "workspace:*"
   }
 }
